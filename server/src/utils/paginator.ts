@@ -1,6 +1,6 @@
 import PaginationParams, { PaginationParamsType } from "../validations/PaginationParams";
 import PaginationReturnTypes from "../entities/PaginationReturnTypes";
-import { DEFAULT_PAGE_SIZE } from "../constants/constants";
+import { DEFAULT_PAGE_SIZE } from "../entities/constants";
 import prismaClient from "./prismaClient";
 
 type model = "genres" | "publishers" | "authors" | "bookInfo" | "bookReservations";
