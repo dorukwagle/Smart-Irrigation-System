@@ -8,44 +8,108 @@ generator client {
     previewFeatures = ["fullTextSearch", "fullTextIndex", "omitApi"]
 }
 
-enum EStatus {
-    Pending
-    Completed
+enum EIrrigationStatus {
+    ON
+    OFF
 }
 
 model Users {
-    userId    String    @id @default(cuid())
+    userId    String     @id @default(cuid())
     fullName  String
-    username     String    @unique
+    username  String     @unique
     password  String
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
     deletedAt DateTime?
-    sessions Sessions[]
-    todos Todos[]
+    systems Systems[]
+    sessions  Sessions[]
+    systemSessions SystemSessions[]
 }
 
-model Todos {
-    todoId String @id @default(cuid())
-    title String
-    body String?
+model Systems {
+    systemId String @id @default(cuid())
+    systemName String 
+    pumpFlowRate Float 
     userId String
-    status EStatus @default(Pending)
-    user Users @relation(fields: [userId], references: [userId])
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
     deletedAt DateTime?
+    user Users @relation(fields: [userId], references: [userId])
+    cropSessions CropSessions[]
+    session SystemSessions?
+    preferences SystemPreferences?
+    liveStatus LiveStatus?
+}
 
-    @@fulltext([title, body])
+model CropSessions {
+    cropSessionId String @id @default(cuid())
+    cropName      String
+    initialCropAge Int @default(1)
+    ageCount Int @default(1)
+    sessionActive Boolean @default(true)
+    systemId String
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
+    system Systems @relation(fields: [systemId], references: [systemId])
+    schedules Schedules[]
+}
+
+model SystemSessions {
+    systemSessionId String @id @default(cuid())
+    systemIdentifier String @unique
+    currentSchedule String?
+    userId String
+    systemId String @unique
+    user Users @relation(fields: [userId], references: [userId])
+    system Systems @relation(fields: [systemId], references: [systemId])
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
+}
+
+model Schedules {
+    scheduleId String @id @default(cuid())
+    cropAge Int
+    irrigationStartTime DateTime @default(now()) @db.Timestamp(3)
+    irrigationStopTime DateTime? @db.Timestamp(3)
+    cropSessionId String
+    cropSession CropSessions @relation(fields: [cropSessionId], references: [cropSessionId])
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
+}
+
+model SystemPreferences {
+    systemPreferenceId String @id @default(cuid())
+    isManualOverride Boolean @default(false)
+    isIrrigationActive Boolean @default(false)
+    systemId String @unique
+    system Systems @relation(fields: [systemId], references: [systemId])
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
+}
+
+model LiveStatus {
+    liveStatusId String @id @default(cuid())
+    irrigationStatus EIrrigationStatus @default(OFF)
+    temperature Float
+    humidity Float
+    moisture Float
+    systemId String @unique
+    system Systems @relation(fields: [systemId], references: [systemId])
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
 }
 
 model Sessions {
-  sessionId BigInt @id @default(autoincrement())
-  session String @unique
-  userId String
-  user Users @relation(fields: [userId], references: [userId])
-  createdAt DateTime @default(now()) @db.Timestamp(3)
-  deletedAt DateTime?
-  expiresAt DateTime @db.Timestamp(3)
+    sessionId BigInt    @id @default(autoincrement())
+    session   String    @unique
+    userId    String
+    user      Users     @relation(fields: [userId], references: [userId])
+    createdAt DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt DateTime?
+    expiresAt DateTime  @db.Timestamp(3)
 }
-

@@ -1,6 +1,6 @@
-import FilterParams, {FilterParamsType} from "../validations/FilterParams";
+import PaginationParams, { PaginationParamsType } from "../validations/PaginationParams";
 import PaginationReturnTypes from "../entities/PaginationReturnTypes";
-import {DEFAULT_PAGE_SIZE} from "../constants/constants";
+import { DEFAULT_PAGE_SIZE } from "../constants/constants";
 import prismaClient from "./prismaClient";
 
 type model = "genres" | "publishers" | "authors" | "bookInfo" | "bookReservations";
@@ -92,10 +92,10 @@ const paginateItems = async (page: number, size: number,
     return res;
 };
 
-const getPaginatedItems = async (model: model, filterParams: FilterParamsType,
+const getPaginatedItems = async (model: model, filterParams: PaginationParamsType,
                                  whereArgs?: WhereArgs, includes?: string[], sort?: {}) => {
     const res = {statusCode: 200} as PaginationReturnTypes;
-    const validation = FilterParams.safeParse(filterParams);
+    const validation = PaginationParams.safeParse(filterParams);
 
     const page = validation.data?.page || 1;
     const pageSize = validation.data?.pageSize || DEFAULT_PAGE_SIZE;
