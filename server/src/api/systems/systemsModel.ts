@@ -3,9 +3,10 @@ import formatValidationErrors from "../../utils/formatValidationErrors";
 import SystemForm, { SystemFormType } from "../../validations/SystemForm";
 import prismaClient from "../../utils/prismaClient";
 import { v7 } from "uuid";
+import SystemUpdateForm, { SystemUpdateFormType } from "../../validations/SystemUpdateForm";
 
 const registerSystem = async (userId: string, body: SystemFormType) => {
-    const res = { statusCode: 400 } as ModelReturnTypes;
+    const res = { statusCode: 200 } as ModelReturnTypes;
 
     const validation = SystemForm.safeParse(body);
     const error = formatValidationErrors(validation);
@@ -35,7 +36,6 @@ const registerSystem = async (userId: string, body: SystemFormType) => {
 
     res.data = { ...system, identifier};
 
-    res.statusCode = 200;
     return res;
 }
 
@@ -58,6 +58,27 @@ const regenerateIdentifier = async (userId: string, systemId: string) => {
     return res;
 }
 
+const updateSystem = async (userId: string, systemId: string, body: SystemUpdateFormType) => {
+    const res = { statusCode: 200 } as ModelReturnTypes;
+
+    const validation = SystemUpdateForm.safeParse(body);
+    const error = formatValidationErrors(validation);
+    if (error) return error;
+
+    const data = validation.data!;
+    if (!(data.pumpFlowRate || data.systemName)) return res;
+
+    res.data = await prismaClient.systems.update({
+        where: {
+            systemId,
+            userId
+        },
+        data
+    });
+
+    return res;
+}
+
 const deleteSystem = async (userId: string, systemId: string) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
 
@@ -75,5 +96,6 @@ const deleteSystem = async (userId: string, systemId: string) => {
 export {
     registerSystem,
     regenerateIdentifier,
+    updateSystem,
     deleteSystem
 }

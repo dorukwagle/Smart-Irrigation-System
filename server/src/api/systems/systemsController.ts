@@ -1,7 +1,7 @@
 import express from "express";
 import systemAuth from "../../middlewares/systemAuth";
 import authorize from "../../middlewares/auth";
-import { deleteSystem, regenerateIdentifier, registerSystem } from "./systemsModel";
+import { deleteSystem, regenerateIdentifier, registerSystem, updateSystem } from "./systemsModel";
 import SessionRequest from "../../entities/SessionRequest";
 
 
@@ -22,6 +22,12 @@ systems.post("/register", authorize, async (req: SessionRequest, res) => {
 // regenerate system identifier
 systems.post("/regenerate/:systemId", authorize, async (req: SessionRequest<{systemId: string}>, res) => {
     const {error, statusCode, data} = await regenerateIdentifier(req.session!.userId, req.params.systemId);
+    res.status(statusCode).json(data || error);
+});
+
+// update system
+systems.put("/update/:systemId", authorize, async (req: SessionRequest<{systemId: string}>, res) => {
+    const {error, statusCode, data} = await updateSystem(req.session!.userId, req.params.systemId, req.body);
     res.status(statusCode).json(data || error);
 });
 
