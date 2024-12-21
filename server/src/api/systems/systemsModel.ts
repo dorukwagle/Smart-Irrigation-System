@@ -39,6 +39,41 @@ const registerSystem = async (userId: string, body: SystemFormType) => {
     return res;
 }
 
+const regenerateIdentifier = async (userId: string, systemId: string) => {
+    const res = { statusCode: 200 } as ModelReturnTypes;
+
+    const identifier = v7();
+
+    await prismaClient.systemSessions.update({
+        where: {
+            systemId,
+            userId
+        },
+        data: {
+            systemIdentifier: identifier
+        }
+    });
+
+    res.data = { identifier };
+    return res;
+}
+
+const deleteSystem = async (userId: string, systemId: string) => {
+    const res = { statusCode: 200 } as ModelReturnTypes;
+
+    await prismaClient.systems.delete({
+        where: {
+            systemId,
+            userId
+        }
+    });
+
+    res.data = { message: "System deleted" };
+    return res;
+}
+
 export {
-    registerSystem
+    registerSystem,
+    regenerateIdentifier,
+    deleteSystem
 }
