@@ -75,10 +75,13 @@ const updateCropSession = async (systemId: string, cropSessionId: string, body: 
 const deleteCropSession = async (systemId: string, cropSessionId: string) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
 
-    await prismaClient.cropSessions.delete({
+    await prismaClient.cropSessions.update({
         where: {
             systemId,
             cropSessionId
+        },
+        data: {
+            deletedAt: new Date()
         }
     });
 

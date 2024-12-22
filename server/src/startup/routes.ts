@@ -3,8 +3,8 @@ import cookieParser from "cookie-parser";
 import auth from "../api/auth/authController";
 import users from "../api/users/usersController";
 import authorize from "../middlewares/auth";
-import samples from "../api/sample/samplesController";
 import systems from "../api/systems/systemsController";
+import cropSessions from "../api/cropSessions/cropSessionController";
 
 
 const api = (p: string) => `/api/${p}`;
@@ -14,9 +14,8 @@ const initializeRoutes = (app: Express): void => {
 
     app.use(api("user"), users);
     app.use(api("auth"), auth);
-    app.use(api("samples"), authorize, samples);
     app.use(api("systems"), systems);
-
+    app.use(api("crop-sessions"), authorize, cropSessions);
 }
 
 export default initializeRoutes;
