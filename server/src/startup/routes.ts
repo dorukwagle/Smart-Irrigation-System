@@ -18,6 +18,7 @@ const initializeRoutes = (app: Express): void => {
     app.use(api("auth"), auth);
     app.use(api("systems"), authorize, systems);
     app.use(api("crop-sessions"), authorize, cropSessions);
+
     app.use("/intercom", intercomAuth, intercom);
 }
 

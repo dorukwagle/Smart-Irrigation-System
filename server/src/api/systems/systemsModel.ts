@@ -4,6 +4,10 @@ import SystemForm, { SystemFormType } from "../../validations/SystemForm";
 import prismaClient from "../../utils/prismaClient";
 import { v7 } from "uuid";
 import SystemUpdateForm, { SystemUpdateFormType } from "../../validations/SystemUpdateForm";
+import PaginationParams, { PaginationParamsType } from "../../validations/PaginationParams";
+import PaginationReturnTypes from "../../entities/PaginationReturnTypes";
+import { DEFAULT_PAGE_SIZE } from "../../entities/constants";
+import { getPaginatedItems, WhereArgs } from "../../utils/paginator";
 
 const registerSystem = async (userId: string, body: SystemFormType) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
@@ -93,9 +97,26 @@ const deleteSystem = async (userId: string, systemId: string) => {
     return res;
 }
 
+const getSystems = async (userId: string, params: PaginationParamsType) => {
+    const sort = params.seed ? {systemName: "asc"} : {createdAt: "desc"};
+    const args: WhereArgs = {
+        defaultSeed: params.seed || "",
+        fields: [
+            {column: "userId", seed: userId},
+        ]
+    };
+
+    if (params.seed) 
+        args.fields.push({column: "systemName"});
+    
+
+    return getPaginatedItems("systems", params, args, [], sort);
+}
+
 export {
     registerSystem,
     regenerateIdentifier,
     updateSystem,
-    deleteSystem
+    deleteSystem,
+    getSystems
 }

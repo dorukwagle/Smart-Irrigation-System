@@ -5,6 +5,8 @@ import SessionRequest from "../../entities/SessionRequest";
 
 const systems = express.Router();
 
+
+
 // register system
 systems.post("/register", async (req: SessionRequest, res) => {
     const {error, statusCode, data} = await registerSystem(req.session!.userId, req.body);

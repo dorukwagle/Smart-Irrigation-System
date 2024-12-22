@@ -2,29 +2,11 @@ import { DEFAULT_PAGE_SIZE } from "../../entities/constants";
 import ModelReturnTypes from "../../entities/ModelReturnTypes";
 import PaginationReturnTypes from "../../entities/PaginationReturnTypes";
 import formatValidationErrors from "../../utils/formatValidationErrors";
+import { getPaginatedItems, WhereArgs } from "../../utils/paginator";
 import prismaClient from "../../utils/prismaClient";
 import CropSessionForm, { CropSessionFormType } from "../../validations/CropSessionForm";
 import PaginationParams, { PaginationParamsType } from "../../validations/PaginationParams";
 
-
-
-const getFilter = (systemId: string, filter: PaginationParamsType) => {
-    const seed = filter.seed;
-
-    const noSeed = { systemId };
-    const withSeed = {
-        AND: [
-            {
-                systemId,
-                cropName: {
-                    contains: seed || "",
-                }
-            },
-        ],
-    };
-
-    return seed ? withSeed : noSeed;
-};
 
 const createCropSession = async (userId: string, systemId: string, body: CropSessionFormType) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
@@ -137,40 +119,19 @@ const deactivateCropSession = async (systemId: string, cropSessionId: string) =>
     return res;
 }
 
-const paginateCropSessions = async (systemId: string, body: PaginationParamsType) => {
-    const res = { statusCode: 200, info: {}, data: {}} as PaginationReturnTypes;
-
-    const validation = PaginationParams.safeParse(body);
-    const error = formatValidationErrors(validation);
-    if (error) {
-        res.statusCode = error.statusCode;
-        res.error = error.error;
-        return res;
+const paginateCropSessions = async (systemId: string, params: PaginationParamsType) => {
+    const sort = params.seed ? {cropName: "asc"} : {createdAt: "desc"};
+    const args: WhereArgs = {
+        defaultSeed: params.seed || "",
+        fields : [
+        {column: "systemId", seed: systemId},
+        ]
     };
-
-    const filter = validation.data!;
-
-    const page = filter.page || 1;
-    const pageSize = filter.pageSize || DEFAULT_PAGE_SIZE;
-
-
-    res.data = await prismaClient.cropSessions.findMany({
-        where: getFilter(systemId, filter),
-        orderBy: {
-                  createdAt: "desc",
-            },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-    });
-
-    const total = await prismaClient.cropSessions.count({
-        where: getFilter(systemId, filter),
-    });
-
-    res.info.itemsCount = total;
-    res.info.hasNextPage = total > (page * pageSize);
-
-    return res;
+    
+    if (params.seed) 
+        args.fields.push({column: "cropName"});
+    
+    return getPaginatedItems("cropSessions", params, args, [], sort);
 };
 
 export { 
