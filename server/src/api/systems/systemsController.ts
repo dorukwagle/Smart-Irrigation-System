@@ -1,11 +1,14 @@
 import express from "express";
-import { deleteSystem, regenerateIdentifier, registerSystem, updateSystem } from "./systemsModel";
+import { deleteSystem, getSystems, regenerateIdentifier, registerSystem, updateSystem } from "./systemsModel";
 import SessionRequest from "../../entities/SessionRequest";
 
 
 const systems = express.Router();
 
-
+systems.get("/", async (req: SessionRequest, res) => {
+    const {error, statusCode, data, info} = await getSystems(req.session!.userId, req.query);
+    res.status(statusCode).json(error ? error : {data, info});
+});
 
 // register system
 systems.post("/register", async (req: SessionRequest, res) => {

@@ -108,7 +108,6 @@ const getSystems = async (userId: string, params: PaginationParamsType) => {
 
     if (params.seed) 
         args.fields.push({column: "systemName"});
-    
 
     return getPaginatedItems("systems", params, args, [], sort);
 }
