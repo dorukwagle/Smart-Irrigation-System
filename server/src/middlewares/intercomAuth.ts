@@ -15,7 +15,7 @@ const getSystemSession = async(req: Request<{}, any, any, {identifier?: string}>
 }
 
 
-const systemAuth = async (req: SessionRequest, res: Response, next: NextFunction) => {
+const intercomAuth = async (req: SessionRequest, res: Response, next: NextFunction) => {
    const session = await getSystemSession(req);
     if (!session) return res.status(401).json({error: "please identify the device first"});
 
@@ -23,4 +23,4 @@ const systemAuth = async (req: SessionRequest, res: Response, next: NextFunction
     next();
 }
 
-export default systemAuth;
+export default intercomAuth;

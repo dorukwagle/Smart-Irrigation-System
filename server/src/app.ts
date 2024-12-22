@@ -28,8 +28,9 @@ if (process.env.NODE_ENV === "development")
 
 initializeRoutes(app);
 
-app.get("/", (req, res) => {
-    res.json({"message": "Welcome to my app"});
+// receive test connection from remote device
+app.get("/hello", (req, res) => {
+    res.json({message: "hello"})
 });
 
 // handle and log async errors

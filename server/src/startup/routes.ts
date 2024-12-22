@@ -5,6 +5,8 @@ import users from "../api/users/usersController";
 import authorize from "../middlewares/auth";
 import systems from "../api/systems/systemsController";
 import cropSessions from "../api/cropSessions/cropSessionController";
+import intercom from "../api/intercom/intercomController";
+import intercomAuth from "../middlewares/intercomAuth";
 
 
 const api = (p: string) => `/api/${p}`;
@@ -14,8 +16,9 @@ const initializeRoutes = (app: Express): void => {
 
     app.use(api("user"), users);
     app.use(api("auth"), auth);
-    app.use(api("systems"), systems);
+    app.use(api("systems"), authorize, systems);
     app.use(api("crop-sessions"), authorize, cropSessions);
+    app.use("/intercom", intercomAuth, intercom);
 }
 
 export default initializeRoutes;
