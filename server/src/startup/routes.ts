@@ -7,6 +7,7 @@ import systems from "../api/systems/systemsController";
 import cropSessions from "../api/cropSessions/cropSessionController";
 import intercom from "../api/intercom/intercomController";
 import intercomAuth from "../middlewares/intercomAuth";
+import preference from "../api/preferences/preferenceController";
 
 
 const api = (p: string) => `/api/${p}`;
@@ -18,6 +19,7 @@ const initializeRoutes = (app: Express): void => {
     app.use(api("auth"), auth);
     app.use(api("systems"), authorize, systems);
     app.use(api("crop-sessions"), authorize, cropSessions);
+    app.use(api("preferences"), authorize, preference);
 
     app.use("/intercom", intercomAuth, intercom);
 }
