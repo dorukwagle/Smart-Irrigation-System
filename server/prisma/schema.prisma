@@ -94,9 +94,9 @@ model SystemPreferences {
 model LiveStatus {
     liveStatusId String @id @default(cuid())
     irrigationStatus EIrrigationStatus @default(OFF)
-    temperature Float
-    humidity Float
-    moisture Float
+    temperature Float?
+    humidity Float?
+    moisture Float?
     systemId String @unique
     system Systems @relation(fields: [systemId], references: [systemId])
     createdAt     DateTime  @default(now()) @db.Timestamp(3)
