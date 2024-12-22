@@ -18,24 +18,27 @@ const registerSystem = async (userId: string, body: SystemFormType) => {
 
     const data = validation.data!;
 
-    // register the system
-    const system = await prismaClient.systems.create({
-        data: {
-            ...data,
-            userId
-        }
-    });
-
     // create unique system identifier
     const identifier = v7();
 
-    // create system session
-    await prismaClient.systemSessions.create({
+    // register the system along with preferences, live status and system session
+    const system = await prismaClient.systems.create({
         data: {
-            systemIdentifier: identifier,
-            systemId: system.systemId,
-            userId
-        }
+            ...data,
+            userId,
+            preferences: {
+                create: {}
+            },
+            liveStatus: {
+                create: {}
+            },
+            session: {
+                create: {
+                    systemIdentifier: identifier,
+                    userId
+                }
+            }
+        },
     });
 
     res.data = { ...system, identifier};
