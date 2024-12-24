@@ -18,6 +18,11 @@ const dateDiff = (date1: Date | null, date2: Date | null) => {
     return date2.getTime() - date1.getTime();
 }
 
+const getWeek = (day: number) => {
+    if (day % 7 === 0) return day / 7;
+    return Math.floor(day / 7) + 1;
+}
+
 // get total water usage by the system ( sum of all it's crop sessions)
 // also include duration of operation in (days/weeks)
 const getTotalWaterUsageBySystem = async (systemId: string) => {
@@ -107,6 +112,51 @@ const getTotalWaterUsageBySession = async (systemId: string, cropSessionId: stri
 // get average water usage per week (plotting of every week's water usage by given session)
 const getWaterUsageGraphPerWeek = async (systemId: string, cropSessionId: string) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
+
+    const data = await prismaClient.systems.findUnique({
+        where: {
+            systemId
+        },
+        include: {
+            cropSessions: {
+                where: {
+                    cropSessionId
+                },
+                include: {
+                    schedules: true
+                }
+            }
+        }
+    });
+
+    if (!data || !data.cropSessions.length) return res;
+
+    const session = data.cropSessions[0];
+    const schedules = session.schedules;
+
+    const totalDays = session.ageCount - session.initialCropAge;
+    const totalWeeks = Math.round(totalDays / 7);
+
+    // create a map of weeks and water usage
+    const map = new Map();
+    for (let i = 1; i <= totalWeeks; i++) 
+        map.set(i, 0);
+
+    schedules.forEach(({irrigationStartTime, irrigationStopTime, cropAge}) => {
+        const week = getWeek(session.initialCropAge > 1 ? cropAge - session.initialCropAge : cropAge);
+        const duration = dateDiff(irrigationStopTime, irrigationStartTime) / 1000 / 60; // minutes
+        const waterUsage = data.pumpFlowRate * duration; // water usage in liter of this iteration
+
+        map.set(week, map.get(week) + waterUsage);
+    });
+
+    const {initialCropAge, ageCount} = session;
+    res.data = {
+        initialCropAge,
+        ageCount,
+        totalWeeks,
+        graph: Array.from(map, ([week, waterUsage]) => ({week, waterUsage}))
+    }
 
     return res;
 }
