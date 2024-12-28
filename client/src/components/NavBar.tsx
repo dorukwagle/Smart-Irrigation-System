@@ -73,7 +73,7 @@ const NavBar = ({ toggleOnChange, onMenuBtnClick }: Props) => {
               textDecoration: "none",
             }}
           >
-            Todo
+            Smart Irrigation
           </Typography>
           <Box sx={{ flexGrow: 0 }}>
             <IconButton

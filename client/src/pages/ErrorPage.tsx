@@ -7,7 +7,7 @@ const ErrorPage = () => {
     <>
       <h1>Oops!</h1>
       {
-        isRouteErrorResponse(err) ? "That route doesn't exist" : err
+        isRouteErrorResponse(err) ? "That route doesn't exist" : "An unexpected error occurred"
       }
     </>
   )

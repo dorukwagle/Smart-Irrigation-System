@@ -1,164 +1,83 @@
-import { Box, Button, Fab, Stack, TextField } from "@mui/material";
-import TodoList from "../components/TodoList";
-import TodoComponent from "../components/TodoComponent";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { Save, Search } from "@mui/icons-material";
-import { useRef } from "react";
-import Todo from "../entities/Todo";
-import useAddTodo from "../hooks/useAddTodo";
-import useTodos from "../hooks/useTodos";
-import useDeleteTodo from "../hooks/useDeleteTodo";
-import useCompleteTodo from "../hooks/useCompleteTodo";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import useSystems from "../hooks/useSystems";
+import SystemForm from "../components/SystemForm";
+import SystemPagination from "../entities/SystemPagination";
 
 const DashboardPage = () => {
-  const navigate = useNavigate();
+    const [searchString, setSearchString] = useState<string | undefined>(
+        undefined
+    );
+    const searchFieldRef = useRef<HTMLInputElement>(null);
+    const [showForm, setShowForm] = useState<boolean>(false);
+    const { data, error } = useSystems(searchString);
+    const systems = (data as SystemPagination)?.data;
 
-    const { data: completedTodos, error: completedTodosError } = useTodos({
-        status: "Completed",
-    });
-    const { data: pendingTodos, error: pendingTodosError } = useTodos({
-        status: "Pending",
-    });
-    const { mutate: deleteTodo } = useDeleteTodo();
-    const { mutate: updateTodo } = useCompleteTodo();
+    const handleSearch = () => {
+        if (!searchFieldRef.current || !searchFieldRef.current.value) return;
 
-    const titleRef = useRef<HTMLInputElement>(null);
-    const bodyRef = useRef<HTMLInputElement>(null);
-
-    const { mutate: createTodo } = useAddTodo();
-
-    const handleDeleteTodo = (todoId: string) => {
-        deleteTodo(todoId);
+        setSearchString(searchFieldRef.current.value);
     };
 
-    const handleCompleteTodo = (todoId: string, title: string, body: string) => {
-        updateTodo({ todoId, title, body, status: "Completed" });
-    };
-
-    const handleSubmitTodo = () => {
-        if (!(titleRef.current?.value && bodyRef.current?.value)) return;
-
-        const todo: Todo = {
-            todoId: "",
-            title: titleRef.current.value,
-            body: bodyRef.current.value,
-            status: "Pending",
-        };
-
-        createTodo(todo);
-    };
-
+    if (showForm) return <SystemForm onBack={() => setShowForm(false)}/>;
+    
     return (
-        <Box sx={{ display: "block", height: "100%" }}>
-            {/* <Container> */}
-            <Stack
-                direction={"row"}
-                spacing={5}
-                sx={{
-                    width: "100%",
-                    height: "100%",
-                    flexWrap: "wrap",
-                    ml: 2,
-                    mt: 2,
-                }}
-                useFlexGap
-            >
-                <TodoList status="Pending">
-                    <Box
-                        sx={{
-                            width: "100%",
-                            height: "500px",
-                            overflow: "scroll",
-                        }}
-                    >
-                        {pendingTodosError && (
-                            <p>{pendingTodosError.message}</p>
-                        )}
-                        {pendingTodos &&
-                            pendingTodos.data.map(
-                                ({ todoId, title, body }: Todo) => (
-                                    <TodoComponent
-                                        key={todoId}
-                                        title={title}
-                                        body={body}
-                                        onDelete={() => handleDeleteTodo(todoId)}
-                                        onCompleteClicked={() =>
-                                            handleCompleteTodo(todoId, title, body)
-                                        }
-                                        options
-                                    />
-                                )
-                            )}
-                        {pendingTodos && pendingTodos.data.length === 0 && (
-                            <p>No pending todos</p>
-                        )}
-                    </Box>
-                    <Stack direction={"row"} spacing={0}>
-                        <Stack
-                            direction="column"
-                            spacing={0}
-                            sx={{ width: "100%", mr: 2 }}
-                        >
-                            <TextField
-                                label="Title"
-                                variant="standard"
-                                size="small"
-                                inputRef={titleRef}
-                            />
-                            <TextField
-                                label="Body"
-                                variant="standard"
-                                size="small"
-                                inputRef={bodyRef}
-                            />
-                        </Stack>
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={handleSubmitTodo}
-                        >
-                            <Save />
-                        </Button>
-                    </Stack>
-                </TodoList>
-                <TodoList status="Completed">
-                    <Box
-                        sx={{
-                            width: "100%",
-                            height: "500px",
-                            overflow: "scroll",
-                        }}
-                    >
-                        {completedTodosError && (
-                            <p>{completedTodosError.message}</p>
-                        )}
-                        {completedTodos &&
-                            completedTodos.data.map(
-                                ({ todoId, title, body }: Todo) => (
-                                    <TodoComponent
-                                        key={todoId}
-                                        title={title}
-                                        body={body}
-                                        onDelete={() => handleDeleteTodo(todoId)}
-                                    />
-                                )
-                            )}
-                        {completedTodos && completedTodos.data.length === 0 && (
-                            <p>No completed todos</p>
-                        )}
-                    </Box>
-                </TodoList>
+        <Stack spacing={2} sx={{ p: 2, mx: 3 }}>
+            {/* Search Bar Section */}
+            <Stack direction="row" spacing={1}>
+                <TextField
+                    inputRef={searchFieldRef}
+                    label="Search Systems"
+                    variant="outlined"
+                    fullWidth
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearch}
+                    startIcon={<Search />}
+                >
+                    Search
+                </Button>
             </Stack>
-            {/* </Container> */}
-            <Fab
-                color="primary"
-                aria-label="add"
-                sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 100 }}
-                onClick={() => navigate("/search")}
+
+            {/* List View Section */}
+            <Box sx={{ height: "300px", overflow: "auto" }}>
+                {error && (
+                    <Typography color="error">{error.message}</Typography>
+                )}
+                {systems &&
+                    systems.map((system) => (
+                        <Box
+                            key={system.systemId}
+                            onClick={() => console.log(system.systemId)}
+                            sx={{
+                                p: 1,
+                                cursor: "pointer",
+                                "&:hover": { bgcolor: "#0a0a0a" },
+                            }}
+                        >
+                            <Typography variant="body1">
+                                {system.systemName}
+                            </Typography>
+                        </Box>
+                    ))}
+                {systems && !systems.length && (
+                    <Typography>No systems found</Typography>
+                )}
+            </Box>
+
+            {/* Add System Button Section */}
+            <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<Save />}
+                onClick={() => setShowForm(true)}
             >
-                <Search />
-            </Fab>
-        </Box>
+                Add System
+            </Button>
+        </Stack>
     );
 };
 
