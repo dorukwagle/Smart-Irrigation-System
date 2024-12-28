@@ -96,7 +96,6 @@ const getPaginatedItems = async (model: model, filterParams: PaginationParamsTyp
                                  whereArgs?: WhereArgs, includes?: string[], sort?: {}) => {
     const res = {statusCode: 200} as PaginationReturnTypes;
     const validation = PaginationParams.safeParse(filterParams);
-
     const page = validation.data?.page || 1;
     const pageSize = validation.data?.pageSize || DEFAULT_PAGE_SIZE;
 

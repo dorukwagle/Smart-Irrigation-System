@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteSystem, getSystems, regenerateIdentifier, registerSystem, updateSystem } from "./systemsModel";
+import { deleteSystem, getInfo, getSystems, regenerateIdentifier, registerSystem, updateSystem } from "./systemsModel";
 import SessionRequest from "../../entities/SessionRequest";
 
 
@@ -8,6 +8,11 @@ const systems = express.Router();
 systems.get("/", async (req: SessionRequest, res) => {
     const {error, statusCode, data, info} = await getSystems(req.session!.userId, req.query);
     res.status(statusCode).json(error ? error : {data, info});
+});
+
+systems.get("/info/:systemId", async (req: SessionRequest<{systemId: string}>, res)=> {
+    const {error, statusCode, data} = await getInfo(req.session!.userId, req.params.systemId);
+    res.status(statusCode).json(data || error);
 });
 
 // register system

@@ -41,7 +41,28 @@ const registerSystem = async (userId: string, body: SystemFormType) => {
         },
     });
 
-    res.data = { ...system, identifier};
+    res.data = [{ ...system, identifier}];
+
+    return res;
+}
+
+const getInfo = async (userId: string, systemId: string) => {
+    const res = { statusCode: 200} as ModelReturnTypes;
+
+    const data = await prismaClient.systems.findUnique({
+        where: {
+            userId,
+            systemId
+        },
+        include: {
+            session: true
+        }
+    });
+
+    res.data = [{
+        ...data,
+        identifier: data?.session?.systemIdentifier
+    }];
 
     return res;
 }
@@ -118,6 +139,7 @@ const getSystems = async (userId: string, params: PaginationParamsType) => {
 export {
     registerSystem,
     regenerateIdentifier,
+    getInfo,
     updateSystem,
     deleteSystem,
     getSystems
