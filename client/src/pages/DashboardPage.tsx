@@ -4,11 +4,13 @@ import { useRef, useState } from "react";
 import useSystems from "../hooks/useSystems";
 import SystemForm from "../components/SystemForm";
 import SystemPagination from "../entities/SystemPagination";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
     const [searchString, setSearchString] = useState<string | undefined>(
         undefined
     );
+    const navigate = useNavigate();
     const searchFieldRef = useRef<HTMLInputElement>(null);
     const [showForm, setShowForm] = useState<boolean>(false);
     const { data, error } = useSystems(searchString);
@@ -51,7 +53,7 @@ const DashboardPage = () => {
                     systems.map((system) => (
                         <Box
                             key={system.systemId}
-                            onClick={() => console.log(system.systemId)}
+                            onClick={() => navigate(`/dashboard/${system.systemId}`)}
                             sx={{
                                 p: 1,
                                 cursor: "pointer",
