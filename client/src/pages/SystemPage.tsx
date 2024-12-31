@@ -152,14 +152,14 @@ const SystemPage = () => {
             <Button
               variant="contained"
               fullWidth
-              onClick={() => navigate(`/dashboard/${systemInfo.systemId}/statistics`)}
+              onClick={() => navigate(`/statistics/${systemInfo.systemId}`)}
             >
               View Statistics
             </Button>
             <Button
               variant="contained"
               fullWidth
-              onClick={() => navigate(`/dashboard/${systemInfo.systemId}/statistics`)}
+              onClick={() => navigate(`/preferences/${systemInfo.systemId}`)}
             >
               Preferences
             </Button>

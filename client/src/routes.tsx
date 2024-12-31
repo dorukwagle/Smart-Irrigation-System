@@ -8,6 +8,7 @@ import DashboardPage from "./pages/DashboardPage";
 import SearchPage from "./pages/SearchPage";
 import SystemPage from "./pages/SystemPage";
 import SessionPage from "./pages/SessionPage";
+import PreferencePage from "./pages/PreferencePage";
 
 const router = createBrowserRouter([
   {
@@ -22,8 +23,9 @@ const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <DashboardPage /> },
           { path: "dashboard/:id", element: <SystemPage /> },
-          {path: "session/:systemId", element: <SessionPage />},
-          { path: "search", element: <SearchPage /> }
+          { path: "session/:systemId", element: <SessionPage />},
+          { path: "search", element: <SearchPage /> },
+          { path: "preferences/:systemId", element: <PreferencePage /> },
         ],
       },
     ],
