@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import CropSession from "../entities/CropSession";
 import cropSessionService from "../services/cropSessionService";
 import { SESSION_CACHE_KEY, SESSION_INFO_CACHE_KEY } from "../entities/constants";
+import CropSession from "../entities/CropSession";
 
-const useDeactivateSession = (onSuccess?: () => void) => {
+const useDeleteCropSession = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (session: CropSession) =>
-      cropSessionService.setSubroute(`/deactivate/${session.systemId}/${session.cropSessionId}`).post(),
+      cropSessionService.setSubroute(`/${session.systemId}`).delete(session.cropSessionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SESSION_CACHE_KEY });
       queryClient.invalidateQueries({ queryKey: SESSION_INFO_CACHE_KEY });
@@ -17,4 +17,5 @@ const useDeactivateSession = (onSuccess?: () => void) => {
   });
 };
 
-export default useDeactivateSession;
+export default useDeleteCropSession;
+

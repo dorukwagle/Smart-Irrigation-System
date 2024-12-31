@@ -14,7 +14,7 @@ const useSystems = (search?: string) => {
     if (search) params.seed = search;
 
     return useQuery<SystemPagination | System[], AxiosError>({
-        queryKey: SYSTEMS_CACHE_KEY,
+        queryKey: search ? [...SYSTEMS_CACHE_KEY, search] : SYSTEMS_CACHE_KEY,
         queryFn: () => systemService.get('', params),
         staleTime: DAY,
     });

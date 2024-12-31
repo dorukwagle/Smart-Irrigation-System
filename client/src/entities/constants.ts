@@ -5,6 +5,7 @@ const SYSTEMS_CACHE_KEY= ["systems"];
 const NET_ERR_KEY = ["net_err"];
 const SYSTEM_INFO_KEY = ["system_info"];
 const SESSION_CACHE_KEY = ["session"];
+const SESSION_INFO_CACHE_KEY = ["session_info"];
 const CROP_TYPES_CACHE_KEY = ["crop_types"];
 
 const HOUR = 60 * 60 * 1000;
@@ -17,6 +18,7 @@ export {
     NET_ERR_KEY,
     SYSTEMS_CACHE_KEY,
     SESSION_CACHE_KEY,
+    SESSION_INFO_CACHE_KEY,
     CROP_TYPES_CACHE_KEY,
     SYSTEM_INFO_KEY,
     HOUR,

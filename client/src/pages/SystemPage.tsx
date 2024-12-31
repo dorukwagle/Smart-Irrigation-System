@@ -3,10 +3,10 @@ import useDeleteSystem from "../hooks/useDeleteSystem";
 import useSystemInfo from "../hooks/useSystemInfo";
 import useUpdateSystem from "../hooks/useUpdateSystem";
 import { Button, Card, CardContent, Divider, Stack, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import System from "../entities/System";
 import InfoModel from "../components/InfoModel";
-import { ContentCopy, ContentCopyTwoTone, RestartAlt, RestartAltTwoTone, Restore } from "@mui/icons-material";
+import { ContentCopyTwoTone, Restore } from "@mui/icons-material";
 import useRegenerateIdentifier from "../hooks/useRegenerateIdentifier";
 
 const SystemPage = () => {
@@ -23,8 +23,8 @@ const SystemPage = () => {
   const {mutate: regenerateIdentifier} = useRegenerateIdentifier();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [systemName, setSystemName] = useState(systemInfo?.systemName || "");
-  const [pumpFlowRate, setPumpFlowRate] = useState(systemInfo?.pumpFlowRate || 0);
+  const systemNameRef = useRef<HTMLInputElement>(null);
+  const pumpFlowRateRef = useRef<HTMLInputElement>(null);
 
   if (!(systemInfo?.systemId)) return (
     <Stack sx={{ justifyContent: "center", alignItems: "center", height: "100vh" }}>
@@ -34,6 +34,10 @@ const SystemPage = () => {
 
 
   const onSystemEdit = () => {
+    if (!systemNameRef.current || !pumpFlowRateRef.current) return;
+    const systemName = systemNameRef.current.value;
+    const pumpFlowRate = parseInt(pumpFlowRateRef.current.value);
+
     updateSystem({ systemId: systemInfo.systemId, systemName, pumpFlowRate } as System);
     setIsEditing(false);
   };
@@ -74,17 +78,15 @@ const SystemPage = () => {
             <Stack spacing={2} flex={1}>
               <TextField
                 label="System Name"
-                value={systemName}
+                value={systemInfo.systemName}
                 variant="standard"
-                onChange={(e) => setSystemName(e.target.value)}
                 disabled={!isEditing}
                 fullWidth
               />
               <TextField
                 label="Pump Flow Rate"
                 variant="standard"
-                value={pumpFlowRate}
-                onChange={(e) => setPumpFlowRate(Number(e.target.value))}
+                value={systemInfo.pumpFlowRate}
                 disabled={!isEditing}
                 fullWidth
                 type="number"
@@ -136,7 +138,7 @@ const SystemPage = () => {
             <Button
               variant="contained"
               fullWidth
-              onClick={() => navigate(`/dashboard/${systemInfo.systemId}/sessions`)}
+              onClick={() => navigate(`/session/${systemInfo.systemId}`)}
             >
               Manage Sessions
             </Button>
@@ -169,3 +171,4 @@ const SystemPage = () => {
 };
 
 export default SystemPage;
+
