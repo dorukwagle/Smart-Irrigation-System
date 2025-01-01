@@ -17,7 +17,7 @@ const createCropSession = async (userId: string, systemId: string, body: CropSes
 
     const {ageCount, cropName} = validation.data!;
 
-    res.data = await prismaClient.cropSessions.create({
+    const data = await prismaClient.cropSessions.create({
         data: {
             systemId,
             ageCount,
@@ -25,7 +25,7 @@ const createCropSession = async (userId: string, systemId: string, body: CropSes
             cropName,
         }
     });
-
+    res.data = [data];
     return res;
 }
 
@@ -40,17 +40,18 @@ const updateCropSession = async (systemId: string, cropSessionId: string, body: 
 
     if (!ageCount && !cropName) return res;
 
-    res.data = await prismaClient.cropSessions.update({
+    const data = await prismaClient.cropSessions.update({
         where: {
             cropSessionId,
             systemId
         },
         data: {
             ageCount,
-            cropName
+            cropName,
+            initialCropAge: ageCount
         }
     });
-
+    res.data = [data];
     return res;
 }
 
@@ -134,11 +135,25 @@ const paginateCropSessions = async (systemId: string, params: PaginationParamsTy
     return getPaginatedItems("cropSessions", params, args, [], sort);
 };
 
+const getCropSession = async (cropSessionId: string) => {
+    const res = {statusCode: 200} as ModelReturnTypes;
+
+    const data = await prismaClient.cropSessions.findUnique({
+        where: {
+            cropSessionId
+        }
+    });
+
+    res.data = [data];
+    return res;
+}
+
 export { 
     createCropSession,
     updateCropSession,
     deleteCropSession,
     activateCropSession,
     deactivateCropSession,
-    paginateCropSessions
+    paginateCropSessions,
+    getCropSession
 }

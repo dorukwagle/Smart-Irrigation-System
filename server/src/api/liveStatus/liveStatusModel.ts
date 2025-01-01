@@ -1,4 +1,3 @@
-import { create } from "domain";
 import ModelReturnTypes from "../../entities/ModelReturnTypes"
 import prismaClient from "../../utils/prismaClient";
 
@@ -38,7 +37,7 @@ const getSystemLiveStatus = async (systemId: string) => {
         },
         take: 5
     });
-
+   
     res.data = {
         manualOverride: Boolean(manualOverride), 
         liveStatus,

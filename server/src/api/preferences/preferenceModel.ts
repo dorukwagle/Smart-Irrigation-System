@@ -1,30 +1,35 @@
 import ModelReturnTypes from "../../entities/ModelReturnTypes";
+import formatValidationErrors from "../../utils/formatValidationErrors";
 import prismaClient from "../../utils/prismaClient";
+import systemPreference, { SystemPreferenceType } from "../../validations/SystemPreference";
 
-const updateManualOverride = async (systemId: string, status: string) => {
+
+const getPreferences = async (systemId: string) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
 
-    res.data = await prismaClient.systemPreferences.update({
+    const data = await prismaClient.systemPreferences.findUnique({
         where: {
             systemId
-        },
-        data: {
-            isManualOverride: status.toLowerCase() === "true"
         }
     });
 
+    res.data = data as any;
     return res;
 }
 
-const updateIrrigationStatus = async (systemId: string, status: string) => {
+const updatePreferences = async (systemId: string, body: SystemPreferenceType) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
+
+    const validation = systemPreference.safeParse(body);
+    const error = formatValidationErrors(validation);
+    if (error) return error;
 
     res.data = await prismaClient.systemPreferences.update({
         where: {
             systemId
         },
         data: {
-            isIrrigationActive: status.toLowerCase() === "true"
+            ...body
         }
     });
 
@@ -32,6 +37,6 @@ const updateIrrigationStatus = async (systemId: string, status: string) => {
 }
 
 export {
-    updateManualOverride,
-    updateIrrigationStatus
+    getPreferences,
+    updatePreferences
 };

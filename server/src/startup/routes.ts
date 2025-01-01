@@ -9,6 +9,7 @@ import intercom from "../api/intercom/intercomController";
 import intercomAuth from "../middlewares/intercomAuth";
 import preference from "../api/preferences/preferenceController";
 import liveStatus from "../api/liveStatus/liveStatusController";
+import statistics from "../api/statistics/statisticsController";
 
 
 const api = (p: string) => `/api/${p}`;
@@ -22,7 +23,8 @@ const initializeRoutes = (app: Express): void => {
     app.use(api("crop-sessions"), authorize, cropSessions);
     app.use(api("preferences"), authorize, preference);
     app.use(api("live-status"), authorize, liveStatus);
-
+    app.use(api("statistics"), authorize, statistics);
+    
     app.use("/intercom", intercomAuth, intercom);
 }
 

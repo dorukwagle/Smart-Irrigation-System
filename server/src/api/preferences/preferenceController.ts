@@ -1,16 +1,17 @@
 import express from "express";
 import SessionRequest from "../../entities/SessionRequest";
-import { updateIrrigationStatus, updateManualOverride } from "./preferenceModel";
+import { getPreferences, updatePreferences } from "./preferenceModel";
 
 const preference = express.Router();
 
-preference.put("/manual-override/:systemId/:status", async (req: SessionRequest<{systemId: string, status: string}>, res) => {
-    const {error, statusCode, data} = await updateManualOverride(req.params.systemId, req.params.status);
+
+preference.get("/:systemId", async (req: SessionRequest<{systemId: string}>, res) => {
+    const {error, statusCode, data} = await getPreferences(req.params.systemId);
     res.status(statusCode).json(data || error);
 });
 
-preference.put("/irrigation-mode/:systemId/:status", async (req: SessionRequest<{systemId: string, status: string}>, res) => {
-    const {error, statusCode, data} = await updateIrrigationStatus(req.params.systemId, req.params.status);
+preference.put("/:systemId", async (req: SessionRequest<{systemId: string}>, res) => {
+    const {error, statusCode, data} = await updatePreferences(req.params.systemId, req.body);
     res.status(statusCode).json(data || error);
 });
 

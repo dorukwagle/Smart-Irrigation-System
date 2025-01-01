@@ -1,8 +1,7 @@
 import express from "express";
 import { CROP_TYPES } from "../../entities/constants";
-import authorize from "../../middlewares/auth";
 import SessionRequest from "../../entities/SessionRequest";
-import { activateCropSession, createCropSession, deactivateCropSession, deleteCropSession, paginateCropSessions, updateCropSession } from "./cropSessionModel";
+import { activateCropSession, createCropSession, deactivateCropSession, deleteCropSession, getCropSession, paginateCropSessions, updateCropSession } from "./cropSessionModel";
 
 
 const cropSessions = express.Router();
@@ -14,6 +13,12 @@ cropSessions.get("/crop-types", async (req, res) => res.json({cropTypes: CROP_TY
 cropSessions.get("/:systemId", async (req: SessionRequest<{systemId: string}>, res) => {
     const {error, statusCode, data, info} = await paginateCropSessions(req.params.systemId, req.query);
     res.status(statusCode).json(error ? error : {data, info});
+});
+
+// get crop session info
+cropSessions.get("/info/:sessionId", async (req: SessionRequest<{sessionId: string}>, res) => {
+    const {error, statusCode, data} = await getCropSession(req.params.sessionId);
+    res.status(statusCode).json(data || error);
 });
 
 // create crop session
