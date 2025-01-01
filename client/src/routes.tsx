@@ -5,11 +5,12 @@ import PrivateRoutes from "./pages/PrivateRoutes";
 import ErrorPage from "./pages/ErrorPage";
 import SignInPage from "./pages/SignInPage";
 import DashboardPage from "./pages/DashboardPage";
-import SearchPage from "./pages/SearchPage";
 import SystemPage from "./pages/SystemPage";
 import SessionPage from "./pages/SessionPage";
 import PreferencePage from "./pages/PreferencePage";
 import LiveStatusPage from "./pages/LiveStatusPage";
+import SystemStatisticsPage from "./pages/SystemStatisticsPage";
+import SessionStatisticsPage from "./pages/SessionStatisticsPage";
 
 const router = createBrowserRouter([
   {
@@ -25,9 +26,10 @@ const router = createBrowserRouter([
           { path: "dashboard", element: <DashboardPage /> },
           { path: "dashboard/:id", element: <SystemPage /> },
           { path: "session/:systemId", element: <SessionPage />},
-          { path: "search", element: <SearchPage /> },
           { path: "preferences/:systemId", element: <PreferencePage /> },
           { path: "status/:systemId", element: <LiveStatusPage /> },
+          { path: "statistics/:systemId", element: <SystemStatisticsPage /> },
+          { path: "statistics/:systemId/:sessionId", element: <SessionStatisticsPage /> },
         ],
       },
     ],

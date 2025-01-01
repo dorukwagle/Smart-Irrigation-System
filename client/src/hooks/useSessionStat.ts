@@ -5,7 +5,7 @@ import sessionStatService from "../services/sessionStatService";
 
 const useSessionStat = (systemId: string, sessionId: string) => {
     return useQuery({
-        queryKey: SESSION_STATISTICS_CACHE_KEY,
+        queryKey: [...SESSION_STATISTICS_CACHE_KEY, systemId, sessionId],
         queryFn: () => sessionStatService.setSubroute(`/${systemId}/${sessionId}`).get(),
         staleTime: DAY
     });

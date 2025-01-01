@@ -7,15 +7,15 @@ import System from "../entities/System";
 const LiveStatusPage = () => {
   const params = useParams<{ systemId: string }>();
   const systemId = params.systemId;
-  const {data: info, isError: systemInfoError} = useSystemInfo(systemId || "");
+  const {data: info, error: systemInfoError} = useSystemInfo(systemId || "");
   const systemInfo = info && (info as System[])[0];
-  const { data: liveStatus, isLoading, isError: liveStatusError } = useLiveStatus(systemId || "");
+  const { data: liveStatus, isLoading, error: liveStatusError } = useLiveStatus(systemId || "");
 
   if (!systemId) return <Typography variant="h4">No such system</Typography>;
 
   if (isLoading) return <Typography variant="h4">Loading...</Typography>;
 
-  if (systemInfoError || liveStatusError) return <Typography variant="h4">Error Fetching Data: {systemInfoError || liveStatusError}</Typography>;
+  if (systemInfoError || liveStatusError) return <Typography variant="h4">Error Fetching Data: {systemInfoError?.message || liveStatusError?.message}</Typography>;
 
   return (
     <Card sx={{ width: "50vw", m: "0 auto", mt: 5, p: 2 }}>
