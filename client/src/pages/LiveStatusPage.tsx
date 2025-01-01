@@ -94,7 +94,8 @@ const LiveStatusPage = () => {
                       minute: "2-digit",
                       second: "2-digit",
                     }).format(new Date(schedule.irrigationStartTime))}
-                    <br />
+                    </td>
+                  <td style={{ padding: "8px" }}>
                     {new Intl.DateTimeFormat(undefined, {
                       year: "numeric",
                       month: "2-digit",
