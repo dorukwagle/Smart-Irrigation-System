@@ -9,6 +9,7 @@ import SearchPage from "./pages/SearchPage";
 import SystemPage from "./pages/SystemPage";
 import SessionPage from "./pages/SessionPage";
 import PreferencePage from "./pages/PreferencePage";
+import LiveStatusPage from "./pages/LiveStatusPage";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
           { path: "session/:systemId", element: <SessionPage />},
           { path: "search", element: <SearchPage /> },
           { path: "preferences/:systemId", element: <PreferencePage /> },
+          { path: "status/:systemId", element: <LiveStatusPage /> },
         ],
       },
     ],

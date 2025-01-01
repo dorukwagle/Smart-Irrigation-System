@@ -145,7 +145,7 @@ const SystemPage = () => {
             <Button
               variant="contained"
               fullWidth
-              onClick={() => navigate(`/dashboard/${systemInfo.systemId}/status`)}
+              onClick={() => navigate(`/status/${systemInfo.systemId}`)}
             >
               Live Status
             </Button>
