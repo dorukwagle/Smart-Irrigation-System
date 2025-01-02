@@ -113,6 +113,7 @@ model DataStack {
     temperature Float
     humidity Float
     moisture Float
+    irrigated Boolean
     createdAt     DateTime  @default(now()) @db.Timestamp(3)
     deletedAt     DateTime?
     updatedAt DateTime @updatedAt
