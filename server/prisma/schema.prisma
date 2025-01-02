@@ -104,6 +104,23 @@ model LiveStatus {
     updatedAt DateTime @updatedAt
 }
 
+model DataStack {
+    dataStackId String @id @default(cuid())
+    systemId String
+    cropSessionId String
+    cropName String
+    ageCount Int
+    temperature Float
+    humidity Float
+    moisture Float
+    createdAt     DateTime  @default(now()) @db.Timestamp(3)
+    deletedAt     DateTime?
+    updatedAt DateTime @updatedAt
+
+    @@index([systemId])
+    @@index([cropSessionId])
+}
+
 model Sessions {
     sessionId BigInt    @id @default(autoincrement())
     session   String    @unique

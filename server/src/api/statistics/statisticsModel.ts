@@ -123,7 +123,11 @@ const getWaterUsageGraphPerWeek = async (systemId: string, cropSessionId: string
                     cropSessionId
                 },
                 include: {
-                    schedules: true
+                    schedules: {
+                        orderBy: {
+                            createdAt: "desc"
+                        }
+                    }
                 }
             }
         }
@@ -155,7 +159,8 @@ const getWaterUsageGraphPerWeek = async (systemId: string, cropSessionId: string
         initialCropAge,
         ageCount,
         totalWeeks,
-        graph: Array.from(map, ([week, waterUsage]) => ({week, waterUsage}))
+        graph: Array.from(map, ([week, waterUsage]) => ({week, waterUsage})),
+        schedules
     }
 
     return res;
