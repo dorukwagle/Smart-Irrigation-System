@@ -11,6 +11,7 @@ const PREFERENCES_CACHE_KEY = ["preferences"];
 const LIVE_STATUS_CACHE_KEY = ["live_status"];
 const SYSTEM_STATISTICS_CACHE_KEY = ["system_statistics"];
 const SESSION_STATISTICS_CACHE_KEY = ["session_statistics"];
+const WATER_USAGE_GRAPH_CACHE_KEY = ["water_usage_graph"];
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
@@ -28,6 +29,7 @@ export {
     LIVE_STATUS_CACHE_KEY,
     SYSTEM_STATISTICS_CACHE_KEY,
     SESSION_STATISTICS_CACHE_KEY,
+    WATER_USAGE_GRAPH_CACHE_KEY,
     SYSTEM_INFO_KEY,
     HOUR,
     DAY

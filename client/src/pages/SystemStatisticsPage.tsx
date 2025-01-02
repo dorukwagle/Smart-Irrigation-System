@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import useCropSessions from "../hooks/useCropSessions";
 import useSystemStats from "../hooks/useSystemStats";
 import { Box, Button, Card, CardContent, Divider, Stack, TextField, Typography } from "@mui/material";
-import CropSession from "../entities/CropSession";
 import { useRef, useState } from "react";
 import SessionPagination from "../entities/SessionPagination";
 
