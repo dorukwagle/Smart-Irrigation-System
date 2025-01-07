@@ -11,4 +11,6 @@ const CROP_TYPES: readonly [string, ...string[]] = [
     "Coffee",
 ];
 
-export { DEFAULT_PAGE_SIZE, CROP_TYPES };
+const AI_SERVER_URL = process.env.AI_SERVER_URL || "http://localhost:1625";
+
+export { DEFAULT_PAGE_SIZE, CROP_TYPES, AI_SERVER_URL };
