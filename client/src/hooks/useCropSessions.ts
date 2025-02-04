@@ -14,7 +14,7 @@ const useCropSessions = (systemId: string, search?: string) => {
     if (search) params.seed = search;
 
     return useQuery<SessionPagination | CropSession[], AxiosError>({
-        queryKey: search ? [...SESSION_CACHE_KEY, search] : SESSION_CACHE_KEY,
+        queryKey: search ? [...SESSION_CACHE_KEY, systemId, search] : SESSION_CACHE_KEY,
         queryFn: () => cropSessionService.setSubroute(`/${systemId}`).get('', params),
         staleTime: DAY,
     });

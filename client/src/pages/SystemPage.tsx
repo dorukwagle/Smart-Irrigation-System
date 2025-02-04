@@ -138,7 +138,10 @@ const SystemPage = () => {
             <Button
               variant="contained"
               fullWidth
-              onClick={() => navigate(`/session/${systemInfo.systemId}`)}
+              onClick={() => {
+                navigate(`/session/${systemInfo.systemId}`);
+                window.location.reload();
+              }}
             >
               Manage Sessions
             </Button>
