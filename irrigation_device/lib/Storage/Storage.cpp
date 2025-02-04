@@ -18,6 +18,22 @@ class Storage {
       preferences.putString(key, value);
     }
 
+    static int readInt(const char* key) {
+      return preferences.getInt(key, 0);
+    }
+
+    static void writeInt(const char* key, int value) {
+      preferences.putInt(key, value);
+    }
+
+    static uint32_t readUInt(const char* key) {
+      return preferences.getUInt(key, 0);
+    }
+
+    static void writeUInt(const char* key, uint32_t value) {
+      preferences.putUInt(key, value);
+    }
+
     static void end() {
       preferences.end();
     }
