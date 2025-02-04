@@ -10,9 +10,12 @@ byte red = 27;
 byte green = 26;
 byte blue = 25;
 byte togglePin = 13;
-const int MAX_SOIL_MOISTURE[] = {600, 800};
-const int MIN_SOIL_MOISTURE = 400;
+
 int toggleCount = 0;
+
+// clock
+byte sda = 21;
+byte scl = 22;
 
 void setup() {
   // put your setup code here, to run once: 
