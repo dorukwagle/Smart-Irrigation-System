@@ -110,10 +110,13 @@ const updateSystem = async (userId: string, systemId: string, body: SystemUpdate
 const deleteSystem = async (userId: string, systemId: string) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
 
-    await prismaClient.systems.delete({
+    await prismaClient.systems.update({
         where: {
             systemId,
             userId
+        },
+        data: {
+            deletedAt: new Date()
         }
     });
 
