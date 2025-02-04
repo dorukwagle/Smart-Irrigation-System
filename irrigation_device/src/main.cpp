@@ -5,6 +5,9 @@
 #include "connector.h"
 #include "WebServer.h"
 #include "ApiClient.h"
+#include "DayTracker.h"
+#include "pump.h"
+#include "Sensors.h"
 
 byte red = 27;
 byte green = 26;

@@ -1203,7 +1203,7 @@ uint8_t DS3231::readRegister8(uint8_t reg)
         value = Wire.read();
     #else
         value = Wire.receive();
-    #endif;
+    #endif
     Wire.endTransmission();
 
     return value;
