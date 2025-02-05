@@ -7,7 +7,7 @@
 class ApiClient {
 public:
     ApiClient(const std::string& baseApi, const std::string& identifier);
-    std::string updateCropDays();
+    bool updateCropDays();
     int predictIrrigation(const std::map<std::string, std::string>& data);
     bool updateLiveStatus(const std::map<std::string, std::string>& data);
 

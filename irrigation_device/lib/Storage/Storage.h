@@ -2,9 +2,14 @@
 #define STORAGE_H
 
 #include <Arduino.h>
+#include <Preferences.h>
 
 class Storage {
+private:
+  static Preferences preferences;
+
 public:
+  static void begin();
   static String readValue(const char* key);
   static void writeValue(const char* key, const String& value);
   static int readInt(const char* key);

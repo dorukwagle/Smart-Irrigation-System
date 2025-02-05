@@ -1,41 +1,38 @@
-#include <Arduino.h>
 #include <Preferences.h>
+#include <Arduino.h>
+#include "Storage.h"
 
-class Storage {
-  private:
-    static Preferences preferences;
+Preferences Storage::preferences;
 
-  public:
-    Storage() {
-      preferences.begin("smart-irrigation", false);
-    }
+void Storage::begin() {
+  preferences.begin("config", false);
+}
 
-    static String readValue(const char* key) {
-      return preferences.getString(key, "");
-    }
+String Storage::readValue(const char* key) {
+  return preferences.getString(key, "");
+}
 
-    static void writeValue(const char* key, const String& value) {
-      preferences.putString(key, value);
-    }
+void Storage::writeValue(const char* key, const String& value) {
+  preferences.putString(key, value);
+}
 
-    static int readInt(const char* key) {
-      return preferences.getInt(key, 0);
-    }
+int Storage::readInt(const char* key) {
+  return preferences.getInt(key, 0);
+}
 
-    static void writeInt(const char* key, int value) {
-      preferences.putInt(key, value);
-    }
+void Storage::writeInt(const char* key, int value) {
+  preferences.putInt(key, value);
+}
 
-    static uint32_t readUInt(const char* key) {
-      return preferences.getUInt(key, 0);
-    }
+uint32_t Storage::readUInt(const char* key) {
+  return preferences.getUInt(key, 0);
+}
 
-    static void writeUInt(const char* key, uint32_t value) {
-      preferences.putUInt(key, value);
-    }
+void Storage::writeUInt(const char* key, uint32_t value) {
+  preferences.putUInt(key, value);
+}
 
-    static void end() {
-      preferences.end();
-    }
-};
+void Storage::end() {
+  preferences.end();
+}
 

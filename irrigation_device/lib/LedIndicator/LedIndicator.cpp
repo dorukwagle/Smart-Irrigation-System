@@ -1,32 +1,28 @@
 #include <Arduino.h>
+#include "LedIndicator.h"
 
-class LedIndicator {
-  private:
-    byte redPin;
-    byte greenPin;
-    byte bluePin;
+#include "LedIndicator.h"
 
-  public:
-    LedIndicator(byte red, byte green, byte blue) {
-      redPin = red;
-      greenPin = green;
-      bluePin = blue;
-    }
+LedIndicator::LedIndicator(byte red, byte green, byte blue) {
+  redPin = red;
+  greenPin = green;
+  bluePin = blue;
+}
 
-    void wifiError() {
-      analogWrite(redPin, 200);
-    }
+void LedIndicator::wifiError() {
+  analogWrite(redPin, 200);
+}
 
-    void netError() {
-      analogWrite(redPin, 200);
-      analogWrite(greenPin, 128);
-    }
+void LedIndicator::netError() {
+  analogWrite(redPin, 200);
+  analogWrite(greenPin, 128);
+}
 
-    void errResponse() {
-      analogWrite(redPin, 200);
-    }
+void LedIndicator::errResponse() {
+  analogWrite(redPin, 200);
+}
 
-    void success() {
-      analogWrite(greenPin, 200);
-    }
-};
+void LedIndicator::success() {
+  analogWrite(greenPin, 200);
+}
+
