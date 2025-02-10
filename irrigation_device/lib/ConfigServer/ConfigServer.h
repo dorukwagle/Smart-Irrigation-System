@@ -1,20 +1,22 @@
-#ifndef WEBSERVER_H
-#define WEBSERVER_H
+#ifndef CONFIGSERVER_H
+#define CONFIGSERVER_H
 
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 #include <functional>
 #include "Storage.h"
 
-class WebServer {
+
+class ConfigServer {
 public:
-    WebServer(); // Constructor
+    ConfigServer(); // Constructor
     void start(); // Start the server
     void setOnRestart(std::function<void()> callback); // Set a callback for restart
 
 private:
     AsyncWebServer server; // The async web server instance
     std::function<void()> callbackFunction; // Callback function for restarting
+    static std::vector<String> networks;
 
     // Route handlers
     void handleRoot(AsyncWebServerRequest *request);
@@ -22,4 +24,4 @@ private:
     void handleRestart(AsyncWebServerRequest *request);
 };
 
-#endif // WEBSERVER_H
+#endif 

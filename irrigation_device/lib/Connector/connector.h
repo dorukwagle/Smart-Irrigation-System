@@ -4,11 +4,13 @@
 #include <WiFi.h>
 #include <vector>
 #include <string>
+#include <Arduino.h>
 
 bool configureHotspot();
-bool createHotspot(char *ssid, char *password);
+bool createHotspot(const char *ssid, const char *password);
 bool connectToNetwork(char *ssid, char *password);
-std::vector<std::string> getAvailableNetworks();
+std::vector<String> getAvailableNetworks();
 bool isConnected();
+void displayHotspotInfo();
 
 #endif // CONNECTOR_H

@@ -9,6 +9,8 @@ void Storage::begin() {
 }
 
 String Storage::readValue(const char* key) {
+  if (!preferences.isKey(key))
+    return "";
   return preferences.getString(key, "");
 }
 
@@ -17,6 +19,8 @@ void Storage::writeValue(const char* key, const String& value) {
 }
 
 int Storage::readInt(const char* key) {
+  if (!preferences.isKey(key))
+    return 0;
   return preferences.getInt(key, 0);
 }
 
@@ -25,6 +29,8 @@ void Storage::writeInt(const char* key, int value) {
 }
 
 uint32_t Storage::readUInt(const char* key) {
+  if (!preferences.isKey(key))
+    return 0;
   return preferences.getUInt(key, 0);
 }
 

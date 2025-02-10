@@ -1,5 +1,7 @@
 #include <WiFi.h>
 #include <vector>
+#include "connector.h"
+#include <Arduino.h>
 
 // Static IP configuration
 IPAddress local_ip(192, 168, 1, 1); // Set your desired IP address
@@ -15,38 +17,46 @@ bool configureHotspot()
     return false;
 }
 
-bool createHotspot(char *ssid, char *password)
+bool createHotspot(const char *ssid, const char *password)
 {
-
+    WiFi.mode(WIFI_AP_STA);
     // Start the Access Point
-    if (WiFi.softAP(ssid, password))
-    {
-        Serial.println("Wi-Fi Hotspot Created! SSID: " + String(ssid) + ", Password: " +
-                       String(password) + ", Static IP Address: " + WiFi.softAPIP().toString());
-        return true;
-    }
+    Serial.print("Creating WiFi hotspot: "); Serial.println(ssid); 
+    Serial.print("Password: "); Serial.println(password);
 
-    Serial.println("Failed to start the Access Point!");
+    bool ap = WiFi.softAP(ssid, password, 6);
+    delay(500);
+
+    if (ap) {
+        Serial.println("AP created: " + WiFi.softAPIP().toString());
+        return true;
+    };
+
     return false;
+}
+
+void displayHotspotInfo()
+{
+    Serial.println("Wi-Fi Hotspot Created! Access Point IP: " +
+                   WiFi.softAPIP().toString());
 }
 
 std::vector<String> getAvailableNetworks()
 {
-    // Start Wi-fi in STA (Station) mode
+    std::vector<String> networks;
+
     WiFi.mode(WIFI_STA);
-    WiFi.disconnect(); // Disconnect from any previously connected network
-    delay(100);
+    WiFi.disconnect();
+    delay(500); // Give time for WiFi to initialize
 
-    // Scan for networks
-    int networkCount = WiFi.scanNetworks();
+    Serial.println("Scanning WiFi networks...");
+    int n = WiFi.scanNetworks();
 
-    if (networkCount == 0)
+    if (n == 0)
         return {};
 
-    std::vector<String> networks(networkCount);
-    for (int i = 0; i < networkCount; i++)
-        // Print network details
-        networks[i] = WiFi.SSID(i); // Network name (SSID)
+    for (int i = 0; i < n; i++)
+        networks.push_back(String(i) + ": " + WiFi.SSID(i));
 
     // Clear the results from memory
     WiFi.scanDelete();

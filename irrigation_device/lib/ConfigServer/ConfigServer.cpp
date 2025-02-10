@@ -2,13 +2,17 @@
 #include <ESPAsyncWebServer.h>
 #include "connector.h"
 #include "Storage.h"
-#include "WebServer.h"
 
-#include "WebServer.h"
+#include "ConfigServer.h"
 
-WebServer::WebServer() : server(80) {}
 
-void WebServer::start()
+std::vector<String> ConfigServer::networks = {};
+
+ConfigServer::ConfigServer() : server(80) {
+    networks = getAvailableNetworks();
+}
+
+void ConfigServer::start()
 {
     server.on("/", HTTP_GET, [this](AsyncWebServerRequest *request)
               { this->handleRoot(request); });
@@ -20,15 +24,13 @@ void WebServer::start()
     server.begin();
 }
 
-void WebServer::setOnRestart(std::function<void()> callback)
+void ConfigServer::setOnRestart(std::function<void()> callback)
 {
     callbackFunction = callback;
 }
 
-void WebServer::handleRoot(AsyncWebServerRequest *request)
+void ConfigServer::handleRoot(AsyncWebServerRequest *request)
 {
-    std::vector<std::string> networks = getAvailableNetworks();
-
     String html = R"(
     <!DOCTYPE html>
     <html>
@@ -43,7 +45,6 @@ void WebServer::handleRoot(AsyncWebServerRequest *request)
 
     for (const auto& network : networks)
         html += "<li>" + String(network.c_str()) + "</li>";
-    networks.clear();
 
     html += R"(
             </ul>
@@ -65,19 +66,40 @@ void WebServer::handleRoot(AsyncWebServerRequest *request)
     request->send(200, "text/html", html);
 }
 
-void WebServer::handleForm(AsyncWebServerRequest *request)
+void ConfigServer::handleForm(AsyncWebServerRequest *request)
 {
-    if (!(request->hasParam("ssid") && request->hasParam("password") && request->hasParam("serverUrl") && request->hasParam("identifier")))
-    {
-        String html = "<!DOCTYPE html><html><head><title>Smart Irrigation</title></head><body><h1>Smart Irrigation</h1><p>Invalide data sent. all fields are required</p></body></html>";
-        request->send(400, "text/html", html);
+    String invalidHtml = "<!DOCTYPE html><html><head><title>Smart Irrigation</title></head><body><h1>Smart Irrigation</h1><p>Invalide data sent. all fields are required</p></body></html>";
+
+    int paramsCount = request->params();
+    for (int i = 0; i < paramsCount; i++) {
+        const AsyncWebParameter* param = request->getParam(i);
+        Serial.println(param->name() + ": " + param->value());
+        Serial.println("");
+    }
+
+    bool hasSsid = request->hasParam("ssid", true);
+    bool hasPassword = request->hasParam("password", true);
+    bool hasServerUrl = request->hasParam("serverUrl", true);
+    bool hasIdentifier = request->hasParam("identifier", true);
+
+    bool allFieldsAvailable = hasSsid && hasPassword && hasServerUrl && hasIdentifier;
+    if (!allFieldsAvailable) {
+        Serial.println("Not all parameters are sent!!");
+        request->send(400, "text/html", invalidHtml);
         return;
     }
 
-    String ssid = request->getParam("ssid")->value();
-    String password = request->getParam("password")->value();
-    String serverUrl = request->getParam("serverUrl")->value();
-    String identifier = request->getParam("identifier")->value();
+    String ssid = request->getParam("ssid", true)->value();
+    String password = request->getParam("password", true)->value();
+    String serverUrl = request->getParam("serverUrl", true)->value();
+    String identifier = request->getParam("identifier", true)->value();
+
+    if (ssid.isEmpty() || password.isEmpty() || serverUrl.isEmpty() || identifier.isEmpty())
+    {
+        Serial.println("Received some parameters are empty!!");
+        request->send(400, "text/html", invalidHtml);
+        return;
+    }
 
     // handle the form data
     Storage storage;
@@ -86,13 +108,11 @@ void WebServer::handleForm(AsyncWebServerRequest *request)
     storage.writeValue("serverUrl", serverUrl);
     storage.writeValue("identifier", identifier);
 
-    Serial.println("SSID: " + ssid + ", Password: " + password + ", Server URL: " + serverUrl + ", Identifier: " + identifier);
-
     String html = "<!DOCTYPE html><html><head><title>Smart Irrigation</title></head><body><h1>Smart Irrigation</h1><p>Form submitted successfully!</p><button onclick=\"location.href='/restart'\">Restart System</button></body></html>";
     request->send(200, "text/html", html);
 }
 
-void WebServer::handleRestart(AsyncWebServerRequest *request)
+void ConfigServer::handleRestart(AsyncWebServerRequest *request)
 {
     String html = "<!DOCTYPE html><html><head><title>Smart Irrigation</title></head><body><h1>Smart Irrigation</h1><p>Restarting...</p></body></html>";
     request->send(200, "text/html", html);

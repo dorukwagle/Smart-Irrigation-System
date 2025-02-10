@@ -14,6 +14,7 @@ class LedIndicator {
     void netError();
     void errResponse();
     void success();
+    void setup();
 };
 
 #endif // LEDINDICATOR_H
