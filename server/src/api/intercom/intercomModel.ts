@@ -39,6 +39,12 @@ const increaseCropDays = async (systemId: string) => {
         res.error = {error: "no active session"}
     }
 
+    const lastDate = activeSession?.lastAgeUpdated;
+    const today = new Date();
+    const dayDiff = Math.floor((today.getTime() - lastDate!.getTime()) / (1000 * 3600 * 24));
+
+    if (dayDiff <= 0) return res;
+
     res.data = await prismaClient.cropSessions.update({
         where: {
             systemId,
@@ -46,8 +52,9 @@ const increaseCropDays = async (systemId: string) => {
         },
         data: {
             ageCount: {
-                increment: 1
-            }
+                increment: dayDiff
+            },
+            lastAgeUpdated: today
         }
     });
 

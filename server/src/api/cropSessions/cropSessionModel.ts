@@ -23,6 +23,7 @@ const createCropSession = async (userId: string, systemId: string, body: CropSes
             ageCount,
             initialCropAge: ageCount,
             cropName,
+            lastAgeUpdated: new Date(),
         }
     });
     res.data = [data];

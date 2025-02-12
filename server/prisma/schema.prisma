@@ -47,6 +47,7 @@ model CropSessions {
     initialCropAge Int @default(1)
     ageCount Int @default(1)
     sessionActive Boolean @default(false)
+    lastAgeUpdated DateTime?
     systemId String
     createdAt     DateTime  @default(now()) @db.Timestamp(3)
     deletedAt     DateTime?
