@@ -8,7 +8,7 @@
 
 bool configureHotspot();
 bool createHotspot(const char *ssid, const char *password);
-bool connectToNetwork(char *ssid, char *password);
+bool connectToNetwork(const char *ssid, const char *password);
 std::vector<String> getAvailableNetworks();
 bool isConnected();
 void displayHotspotInfo();

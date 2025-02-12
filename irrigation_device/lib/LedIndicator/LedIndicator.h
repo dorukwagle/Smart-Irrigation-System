@@ -12,9 +12,10 @@ class LedIndicator {
     LedIndicator(byte red, byte green, byte blue);
     void wifiError();
     void netError();
-    void errResponse();
     void success();
     void setup();
+    void failSafe();
+    void unauthorized();
 };
 
 #endif // LEDINDICATOR_H

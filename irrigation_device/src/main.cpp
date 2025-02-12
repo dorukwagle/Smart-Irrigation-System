@@ -8,12 +8,22 @@
 #include "DayTracker.h"
 #include "pump.h"
 #include "Sensors.h"
+#include "Controller.h"
 
 byte red = 27;
 byte green = 26;
 byte blue = 25;
 byte configPin = 13;
+byte moisturePowerPin = 33;
+
 byte powerPin = 2;
+byte dhtPin = 4;
+byte moisturePin = 5;
+
+//motor
+byte speed = 14;
+byte dir1 = 15;
+byte dir2 = 16;
 
 int toggleCount = 0;
 // IRReader irReader(irPin);
@@ -21,16 +31,14 @@ int toggleCount = 0;
 bool setupRunning = false;
 bool configured = false;
 
-// clock
-byte sda = 21;
-byte scl = 22;
-
 LedIndicator indicator(red, green, blue);
 ConfigServer* server = nullptr;
+Controller* controller = nullptr;
+Sensors sensors(dhtPin, moisturePowerPin, moisturePin);
+
 
 void checkConfigured()
 {
-  Storage::begin();
   String ssid = Storage::readValue("ssid");
   String password = Storage::readValue("password");
   String serverUrl = Storage::readValue("serverUrl");
@@ -47,7 +55,12 @@ void setup()
   pinMode(blue, OUTPUT);
   pinMode(configPin, INPUT);
   pinMode(powerPin, OUTPUT);
+
+  Storage::begin();
+  controller = new Controller(&indicator, &sensors, speed, dir1, dir2);
+
   delay(1000);
+
   Serial.println("setup done....");
 }
 
@@ -56,7 +69,7 @@ void runConfiguration()
   indicator.setup();
 
   if (setupRunning) {
-    server->start();
+    delay(200);
     return;
   }
   
@@ -73,10 +86,49 @@ void runConfiguration()
   server->start();
 }
 
+bool connectWifi()
+{
+  if (isConnected())
+    return true;
+
+  String ssid = Storage::readValue("ssid");
+  String password = Storage::readValue("password");
+  return connectToNetwork(ssid.c_str(), password.c_str());
+}
+
+
+void ledTest() {
+  int wait = 3000;
+  Serial.println("Wifi error: ");
+  indicator.wifiError();
+  delay(wait);
+
+  Serial.println("Net error: ");
+  indicator.netError();
+  delay(wait);
+
+  Serial.println("Fail safe: ");
+  indicator.failSafe();
+  delay(wait);
+
+  Serial.println("Setup: ");
+  indicator.setup();
+  delay(wait);
+
+  Serial.println("Unauthorized: ");
+  indicator.unauthorized();
+  delay(wait);
+
+  Serial.println("Success: ");
+  indicator.success();
+  delay(wait);
+}
+
 void loop()
 {
+  ledTest();
+  return;
   digitalWrite(powerPin, HIGH);
-
   checkConfigured();
 
   bool buttonState = digitalRead(configPin) == HIGH;
@@ -86,12 +138,19 @@ void loop()
     delay(500);
     return;
   }
+
+  if (!connectWifi())
+    indicator.wifiError();
+
+// run the main program controller
+  controller->run();
+
   Serial.println("Server Configured: " + buttonState);
 
-  Serial.println(Storage::readValue("ssid"));
-  Serial.println(Storage::readValue("password"));
-  Serial.println(Storage::readValue("serverUrl"));
-  Serial.println(Storage::readValue("identifier"));
-  indicator.success();
+  // Serial.println(Storage::readValue("ssid"));
+  // Serial.println(Storage::readValue("password"));
+  // Serial.println(Storage::readValue("serverUrl"));
+  // Serial.println(Storage::readValue("identifier"));
+  // indicator.success();
   delay(500);
 }

@@ -64,7 +64,7 @@ std::vector<String> getAvailableNetworks()
     return networks;
 }
 
-bool connectToNetwork(char *ssid, char *password)
+bool connectToNetwork(const char *ssid, const char *password)
 {
     int maxTries = 3;
 

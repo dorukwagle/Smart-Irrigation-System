@@ -6,10 +6,14 @@
 
 ApiClient::ApiClient(const std::string& baseApi, const std::string& identifier) : baseApi_(baseApi), identifier_(identifier) {}
 
-std::string ApiClient::sendPostRequest(const std::string& endpoint, const std::map<std::string, std::string>& data) {
+int ApiClient::sendPostRequest(const std::string& endpoint, const std::map<std::string, std::string>& data, String& res) {
     HTTPClient http;
-    std::string url = baseApi_ + endpoint + "?identifier=" + identifier_;
+    std::string url = baseApi_ + "/intercom" + endpoint + "?identifier=" + identifier_;
     http.begin(url.c_str());
+    // Serial.print("baseUrl: "); Serial.println(baseApi_.c_str());
+    // Serial.println(url.c_str());
+    Serial.print("Sending request to: "); Serial.println(url.c_str());
+    
     http.addHeader("Content-Type", "application/json");
 
     JSONVar jsonDoc;
@@ -19,49 +23,55 @@ std::string ApiClient::sendPostRequest(const std::string& endpoint, const std::m
 
     String requestBody = JSON.stringify(jsonDoc);
     int httpCode = http.POST(requestBody);
-    if (httpCode > 0) {
-        return http.getString().c_str();
-    } else {
-        return "Error on HTTP request";
-    }
+    if (httpCode > 0) 
+        res = http.getString().c_str();
+    else 
+        res = "Error on HTTP request";
+
+    return httpCode;
 }
 
-std::string ApiClient::sendPutRequest(const std::string& endpoint) {
+int ApiClient::sendPutRequest(const std::string& endpoint, String& res) {
     HTTPClient http;
     std::string url = baseApi_ + endpoint + "?identifier=" + identifier_;
     http.begin(url.c_str());
     http.addHeader("Content-Type", "application/json");
-
+    
     int httpCode = http.PUT("");  // No body needed
-    if (httpCode > 0) {
-        return http.getString().c_str();
-    } else {
-        return "Error on HTTP request";
-    }
+    if (httpCode > 0) 
+        res = http.getString().c_str();
+    else 
+        res = "Error on HTTP request";
+
+    return httpCode;
 }
 
 int ApiClient::predictIrrigation(const std::map<std::string, std::string>& data) {
-    std::string response = sendPostRequest("/system/irrigation", data);
+    String response;
+    int code = sendPostRequest("/system/irrigation", data, response);
     JSONVar jsonDoc = JSON.parse(response.c_str());
 
+    if (code != 200) 
+        return code;
+    
     if (JSON.typeof(jsonDoc) == "undefined" || !jsonDoc.hasOwnProperty("irrigate")) {
-        return -1;  // Error case
+        return -2;  // Error case
     }
+
     return int(jsonDoc["irrigate"]);
 }
 
-bool ApiClient::updateLiveStatus(const std::map<std::string, std::string>& data) {
-    std::string response = sendPostRequest("/system/live", data);
+int ApiClient::updateLiveStatus(const std::map<std::string, std::string>& data) {
+    String response;
+    int code = sendPostRequest("/system/live", data, response);
     JSONVar jsonDoc = JSON.parse(response.c_str());
 
-    if (JSON.typeof(jsonDoc) == "undefined" || !jsonDoc.hasOwnProperty("success")) {
-        return false;
-    }
-    return bool(jsonDoc["success"]);
-}
+    if (code != 200) 
+        return code;
 
-bool ApiClient::updateCropDays() {
-    std::string response = sendPutRequest("/increase-crop-days");
-    return response == "success";
+    if (JSON.typeof(jsonDoc) == "undefined" || !jsonDoc.hasOwnProperty("status")) 
+        return -2;
+
+    return String((const char*)jsonDoc["status"]) == "success";
 }
 

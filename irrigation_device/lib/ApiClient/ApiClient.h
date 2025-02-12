@@ -7,13 +7,12 @@
 class ApiClient {
 public:
     ApiClient(const std::string& baseApi, const std::string& identifier);
-    bool updateCropDays();
     int predictIrrigation(const std::map<std::string, std::string>& data);
-    bool updateLiveStatus(const std::map<std::string, std::string>& data);
+    int updateLiveStatus(const std::map<std::string, std::string>& data);
 
 private:
-    std::string sendPutRequest(const std::string& endpoint);
-    std::string sendPostRequest(const std::string& endpoint, const std::map<std::string, std::string>& data);
+    int sendPutRequest(const std::string& endpoint, String& res);
+    int sendPostRequest(const std::string& endpoint, const std::map<std::string, std::string>& data, String& res);
     
     std::string baseApi_;
     std::string identifier_;
