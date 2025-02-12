@@ -21,12 +21,13 @@ const updateLiveStatus = async (systemId: string, body: LiveStatusType) => {
         }
     });
 
+    // also check if one day has passed
+    await increaseCropDays(systemId);
+
     return res;
 }
 
 const increaseCropDays = async (systemId: string) => {
-    const res = { statusCode: 200 } as ModelReturnTypes;
-
     const activeSession = await prismaClient.cropSessions.findFirst({
         where: {
             systemId,
@@ -34,18 +35,16 @@ const increaseCropDays = async (systemId: string) => {
         }
     });
 
-    if (!activeSession) {
-        res.statusCode = 400;
-        res.error = {error: "no active session"}
-    }
+    if (!activeSession) 
+        return;
 
     const lastDate = activeSession?.lastAgeUpdated;
     const today = new Date();
     const dayDiff = Math.floor((today.getTime() - lastDate!.getTime()) / (1000 * 3600 * 24));
 
-    if (dayDiff <= 0) return res;
+    if (dayDiff <= 0) return;
 
-    res.data = await prismaClient.cropSessions.update({
+    await prismaClient.cropSessions.update({
         where: {
             systemId,
             cropSessionId: activeSession?.cropSessionId
@@ -57,8 +56,6 @@ const increaseCropDays = async (systemId: string) => {
             lastAgeUpdated: today
         }
     });
-
-    return res;
 }
 
 const predictIrrigation = async (systemId: string, scheduleId: string | null | undefined, body: LiveStatusType) => {
@@ -215,6 +212,5 @@ const deleteFalsySchedule = async (systemId: string, scheduleId: string) => {
 
 export {
     updateLiveStatus,
-    increaseCropDays,
     predictIrrigation
 }
