@@ -44,13 +44,17 @@ void Controller::getSensorValues(std::map<std::string, std::string> &data)
     auto moisture = sensors_->readMoisture();
     float temp, humidity;
 
-    while (!sensors_->readTempHumidity(&temp, &humidity))
-    {
-        Serial.println("Failed to read temp and humidity.");
-        delay(500);
-    }
+    // while (!sensors_->readTempHumidity(&temp, &humidity))
+    // {
+    //     Serial.println("Failed to read temp and humidity.");
+    //     delay(500);
+    // }
+    // dummy
+    temp = 25.34;
+    humidity = 50.564;
+    moisture = 455;
 
-    data["soilMoisture"] = String(static_cast<int>(moisture)).c_str();
+    data["moisture"] = String(static_cast<int>(moisture)).c_str();
     data["temperature"] = String(static_cast<int>(temp)).c_str();
     data["humidity"] = String(static_cast<int>(humidity)).c_str();
     data["irrigationStatus"] = irrigating ? "ON" : "OFF";
@@ -77,7 +81,6 @@ bool Controller::shouldIrrigate()
     getSensorValues(data);
 
     res = isConnected() ? client_->predictIrrigation(data) : -4;
-
     indicateResponse(res);
 
     // switch to failsafe mode if server unavailable
@@ -111,7 +114,7 @@ void Controller::controllIrrigation()
 void Controller::run()
 {
     // update live status in regular interval
-    if ((millis() - last_status_update) >= live_status_delay)
+    if (((millis() - last_status_update) >= live_status_delay) && isConnected())
     {
         updateLiveStatus();
         last_status_update = millis();

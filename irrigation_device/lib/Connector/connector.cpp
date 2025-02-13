@@ -47,6 +47,7 @@ std::vector<String> getAvailableNetworks()
 
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
+
     delay(500); // Give time for WiFi to initialize
 
     Serial.println("Scanning WiFi networks...");

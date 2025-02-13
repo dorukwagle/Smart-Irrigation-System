@@ -10,10 +10,6 @@ int ApiClient::sendPostRequest(const std::string& endpoint, const std::map<std::
     HTTPClient http;
     std::string url = baseApi_ + "/intercom" + endpoint + "?identifier=" + identifier_;
     http.begin(url.c_str());
-    // Serial.print("baseUrl: "); Serial.println(baseApi_.c_str());
-    // Serial.println(url.c_str());
-    Serial.print("Sending request to: "); Serial.println(url.c_str());
-    
     http.addHeader("Content-Type", "application/json");
 
     JSONVar jsonDoc;

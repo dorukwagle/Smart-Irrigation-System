@@ -1,11 +1,9 @@
 #include <Arduino.h>
-#include "RandomNumber.h"
 #include "LedIndicator.h"
 #include "Storage.h"
 #include "connector.h"
 #include "ConfigServer.h"
 #include "ApiClient.h"
-#include "DayTracker.h"
 #include "pump.h"
 #include "Sensors.h"
 #include "Controller.h"
@@ -16,16 +14,15 @@ byte blue = 25;
 byte configPin = 13;
 byte moisturePowerPin = 33;
 
-byte powerPin = 2;
-byte dhtPin = 4;
-byte moisturePin = 5;
+byte dhtPin = 19;
+byte moisturePin = 35;
 
 //motor
 byte speed = 14;
 byte dir1 = 15;
 byte dir2 = 16;
 
-int toggleCount = 0;
+volatile bool togglePressed = false;
 // IRReader irReader(irPin);
 
 bool setupRunning = false;
@@ -36,14 +33,16 @@ ConfigServer* server = nullptr;
 Controller* controller = nullptr;
 Sensors sensors(dhtPin, moisturePowerPin, moisturePin);
 
+void IRAM_ATTR handleTogglePress() {
+    togglePressed = true;  // Set the flag immediately on interrupt
+}
 
 void checkConfigured()
 {
   String ssid = Storage::readValue("ssid");
-  String password = Storage::readValue("password");
   String serverUrl = Storage::readValue("serverUrl");
   String identifier = Storage::readValue("identifier");
-  configured = !(ssid.isEmpty() || password.isEmpty() || serverUrl.isEmpty() || identifier.isEmpty());
+  configured = !(ssid.isEmpty() || serverUrl.isEmpty() || identifier.isEmpty());
 }
 
 void setup()
@@ -53,8 +52,9 @@ void setup()
   pinMode(red, OUTPUT);
   pinMode(green, OUTPUT);
   pinMode(blue, OUTPUT);
-  pinMode(configPin, INPUT);
-  pinMode(powerPin, OUTPUT);
+
+  pinMode(configPin, INPUT_PULLUP); // Use internal pull-up resistor
+  attachInterrupt(configPin, handleTogglePress, RISING);
 
   Storage::begin();
   controller = new Controller(&indicator, &sensors, speed, dir1, dir2);
@@ -66,6 +66,7 @@ void setup()
 
 void runConfiguration()
 {
+  togglePressed = false;
   indicator.setup();
 
   if (setupRunning) {
@@ -126,13 +127,10 @@ void ledTest() {
 
 void loop()
 {
-  ledTest();
-  return;
-  digitalWrite(powerPin, HIGH);
+  // ledTest();
+  // return;
   checkConfigured();
-
-  bool buttonState = digitalRead(configPin) == HIGH;
-  if (setupRunning || buttonState || !configured)
+  if (setupRunning || togglePressed || !configured)
   {
     runConfiguration();
     delay(500);
@@ -145,7 +143,7 @@ void loop()
 // run the main program controller
   controller->run();
 
-  Serial.println("Server Configured: " + buttonState);
+  // Serial.println("Server Configured: " + buttonState);
 
   // Serial.println(Storage::readValue("ssid"));
   // Serial.println(Storage::readValue("password"));

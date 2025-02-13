@@ -94,7 +94,7 @@ void ConfigServer::handleForm(AsyncWebServerRequest *request)
     String serverUrl = request->getParam("serverUrl", true)->value();
     String identifier = request->getParam("identifier", true)->value();
 
-    if (ssid.isEmpty() || password.isEmpty() || serverUrl.isEmpty() || identifier.isEmpty())
+    if (ssid.isEmpty() || serverUrl.isEmpty() || identifier.isEmpty())
     {
         Serial.println("Received some parameters are empty!!");
         request->send(400, "text/html", invalidHtml);

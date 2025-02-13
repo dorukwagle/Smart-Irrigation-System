@@ -15,8 +15,8 @@ private:
     Sensors* sensors_;
     ApiClient* client_;
     u_int16_t last_status_update = 0;
-    u_int16_t live_status_delay = 15000;
-    u_int16_t api_call_delay = 15000;
+    u_int16_t live_status_delay = 5000;
+    u_int16_t api_call_delay = 5000;
     u_int16_t irrigate_api_call_delay = 5000;
     bool irrigating = false;
     byte motorSpeed;
