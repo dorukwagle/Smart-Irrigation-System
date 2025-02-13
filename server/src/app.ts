@@ -23,8 +23,8 @@ app.use(express.json({limit: "2048mb"}));
 if (process.env.NODE_ENV === "production") 
     prod(app);
 
-if (process.env.NODE_ENV === "development")
-    app.use(routesLogger);
+
+app.use(routesLogger(process.env.NODE_ENV === "development"));
 
 initializeRoutes(app);
 

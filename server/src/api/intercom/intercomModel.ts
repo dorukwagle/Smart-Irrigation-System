@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { AI_SERVER_URL } from "../../entities/constants";
 import ModelReturnTypes from "../../entities/ModelReturnTypes";
 import formatValidationErrors from "../../utils/formatValidationErrors";
@@ -12,12 +13,14 @@ const updateLiveStatus = async (systemId: string, body: LiveStatusType) => {
     const error = formatValidationErrors(validation);
     if (error) return error;
 
+    const data = validation.data!;
+
     res.data = await prismaClient.liveStatus.update({
         where: {
             systemId
         },
         data: {
-            ...body
+            ...data
         }
     });
 
@@ -38,7 +41,7 @@ const increaseCropDays = async (systemId: string) => {
     if (!activeSession) 
         return;
 
-    const lastDate = activeSession?.lastAgeUpdated;
+    const lastDate = activeSession?.lastAgeUpdated || activeSession.createdAt;
     const today = new Date();
     const dayDiff = Math.floor((today.getTime() - lastDate!.getTime()) / (1000 * 3600 * 24));
 
@@ -61,7 +64,11 @@ const increaseCropDays = async (systemId: string) => {
 const predictIrrigation = async (systemId: string, scheduleId: string | null | undefined, body: LiveStatusType) => {
     const res = { statusCode: 200 } as ModelReturnTypes;
 
-    const validation = LiveStatus.safeParse(body);
+    const validation = LiveStatus.extend({
+        irrigationStatus: z.union([
+                z.literal("ON"), z.literal("OFF")]).optional()
+    }).safeParse(body);
+
     const error = formatValidationErrors(validation);
     if (error) return error;
 
@@ -95,18 +102,17 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
     }
 
     // call the AI model for irrigation prediction
-    const enableIrrigation = await callPredictionModel(session.cropName, session.ageCount, data);
+    const enableIrrigation = await callPredictionModel(session.cropName, session.ageCount, data as LiveStatusType);
 
     // save the parameters & prediction in database
+    delete data.irrigationStatus;
     await prismaClient.dataStack.create({
         data: {
             systemId,
             ageCount: session.ageCount,
             cropName: session.cropName,
             cropSessionId: session.cropSessionId,
-            humidity: data.humidity,
-            moisture: data.soilMoisture,
-            temperature: data.temperature,
+            ...data,
             irrigated: enableIrrigation
         }
     })
@@ -183,9 +189,7 @@ const callPredictionModel = async (cropName: string, cropDays: number, parameter
         body: JSON.stringify({
             crop_type: cropName,
             crop_days: cropDays,
-            moisture: parameters.soilMoisture,
-            temperature: parameters.temperature,
-            humidity: parameters.humidity
+            ...parameters
         }),
         method: "POST"
     });

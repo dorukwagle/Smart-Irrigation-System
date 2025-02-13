@@ -5,7 +5,7 @@ const LiveStatus = z.object({
         z.literal("ON"), z.literal("OFF")]),
     temperature: z.coerce.number(),
     humidity: z.coerce.number(),
-    soilMoisture: z.coerce.number(),
+    moisture: z.coerce.number(),
     currentSchedule: z.string().optional()
 });
 
