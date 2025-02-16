@@ -7,7 +7,7 @@
 
 class Controller {
 public:
-    Controller(LedIndicator* ledIndicator, Sensors* sensors, byte motorSpeed, byte dir1, byte dir2);
+    Controller(LedIndicator* ledIndicator, Sensors* sensors, byte motor);
     void run();
 
 private:
@@ -17,11 +17,9 @@ private:
     u_int16_t last_status_update = 0;
     u_int16_t live_status_delay = 5000;
     u_int16_t api_call_delay = 5000;
-    u_int16_t irrigate_api_call_delay = 5000;
+    u_int16_t irrigate_api_call_delay = 3000;
     bool irrigating = false;
-    byte motorSpeed;
-    byte dir1;
-    byte dir2;
+    byte motor;
 
     void controllIrrigation();
     bool shouldIrrigate();

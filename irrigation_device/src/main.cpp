@@ -4,26 +4,21 @@
 #include "connector.h"
 #include "ConfigServer.h"
 #include "ApiClient.h"
-#include "pump.h"
 #include "Sensors.h"
 #include "Controller.h"
+#include "tests.h"
 
 byte red = 27;
 byte green = 26;
 byte blue = 25;
 byte configPin = 13;
-byte moisturePowerPin = 33;
+byte moisturePowerPin = 23;
 
-byte dhtPin = 19;
-byte moisturePin = 35;
+byte dhtPin = 4;
+byte moisturePin = 34;
 
 //motor
-byte speed = 14;
-byte dir1 = 15;
-byte dir2 = 16;
-
-volatile bool togglePressed = false;
-// IRReader irReader(irPin);
+byte motor = 14;
 
 bool setupRunning = false;
 bool configured = false;
@@ -32,10 +27,6 @@ LedIndicator indicator(red, green, blue);
 ConfigServer* server = nullptr;
 Controller* controller = nullptr;
 Sensors sensors(dhtPin, moisturePowerPin, moisturePin);
-
-void IRAM_ATTR handleTogglePress() {
-    togglePressed = true;  // Set the flag immediately on interrupt
-}
 
 void checkConfigured()
 {
@@ -53,11 +44,13 @@ void setup()
   pinMode(green, OUTPUT);
   pinMode(blue, OUTPUT);
 
-  pinMode(configPin, INPUT_PULLUP); // Use internal pull-up resistor
-  attachInterrupt(configPin, handleTogglePress, RISING);
+  pinMode(moisturePowerPin, OUTPUT);
+  pinMode(motor, OUTPUT);
+
+  pinMode(configPin, INPUT); // Use internal pull-up resistor
 
   Storage::begin();
-  controller = new Controller(&indicator, &sensors, speed, dir1, dir2);
+  controller = new Controller(&indicator, &sensors, motor);
 
   delay(1000);
 
@@ -66,7 +59,6 @@ void setup()
 
 void runConfiguration()
 {
-  togglePressed = false;
   indicator.setup();
 
   if (setupRunning) {
@@ -98,38 +90,16 @@ bool connectWifi()
 }
 
 
-void ledTest() {
-  int wait = 3000;
-  Serial.println("Wifi error: ");
-  indicator.wifiError();
-  delay(wait);
-
-  Serial.println("Net error: ");
-  indicator.netError();
-  delay(wait);
-
-  Serial.println("Fail safe: ");
-  indicator.failSafe();
-  delay(wait);
-
-  Serial.println("Setup: ");
-  indicator.setup();
-  delay(wait);
-
-  Serial.println("Unauthorized: ");
-  indicator.unauthorized();
-  delay(wait);
-
-  Serial.println("Success: ");
-  indicator.success();
-  delay(wait);
-}
-
 void loop()
 {
-  // ledTest();
+  // ledTest(&indicator);
   // return;
+
+  // sensorTest(&sensors);
+  // return;
+
   checkConfigured();
+  bool togglePressed = digitalRead(configPin) == HIGH;
   if (setupRunning || togglePressed || !configured)
   {
     runConfiguration();

@@ -19,6 +19,7 @@ int Sensors::readMoisture()
     digitalWrite(powerPin, HIGH);
     delay(10);
     int val = analogRead(moisturePin);
+    val = map(val, 0, 4095, 0, 1023);
     digitalWrite(powerPin, LOW);
     return val;
 }

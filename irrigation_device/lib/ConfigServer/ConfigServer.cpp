@@ -24,7 +24,7 @@ void ConfigServer::start()
     server.begin();
 }
 
-void ConfigServer::setOnRestart(std::function<void()> callback)
+void ConfigServer::setOnRestart(const std::function<void()> callback)
 {
     callbackFunction = callback;
 }

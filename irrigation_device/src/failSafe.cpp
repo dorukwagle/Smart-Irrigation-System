@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 
-const int max_a = 600;
-const int max_b = 800;
-const int min_a = 550;
+const int max_a = 700;
+const int max_b = 900;
+const int min_a = 580;
 
 bool failSafeIrrigate(int moisture, bool isWatering) {
     if (!isWatering && moisture > max_a && moisture < max_b) {

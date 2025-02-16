@@ -2,20 +2,16 @@
 #include "Storage.h"
 #include "failSafe.h"
 #include "connector.h"
-#include "pump.h"
 
 
-Controller::Controller(LedIndicator *ledIndicator, Sensors *sensors, byte speed, byte dir1, byte dir2) : 
+Controller::Controller(LedIndicator *ledIndicator, Sensors *sensors, byte motor) : 
     ledIndicator_(ledIndicator),
     sensors_(sensors), client_(nullptr),
-    motorSpeed(speed),
-    dir1(dir1),
-    dir2(dir2)
+    motor(motor)
 {
     auto baseApi = Storage::readValue("serverUrl");
     auto identifier = Storage::readValue("identifier");
-    Serial.println("Base API: " + baseApi);
-    Serial.println("Identifier: " + identifier);
+  
     client_ = new ApiClient(baseApi.c_str(), identifier.c_str());
 
     last_status_update = millis();
@@ -35,7 +31,7 @@ void Controller::indicateResponse(int res)
         Serial.println("Unauthorized access.");
         ledIndicator_->unauthorized();
     }
-    else
+    else if (res != 0 && res != 1)
         Serial.println(res);
 }
 
@@ -44,15 +40,12 @@ void Controller::getSensorValues(std::map<std::string, std::string> &data)
     auto moisture = sensors_->readMoisture();
     float temp, humidity;
 
-    // while (!sensors_->readTempHumidity(&temp, &humidity))
-    // {
-    //     Serial.println("Failed to read temp and humidity.");
-    //     delay(500);
-    // }
+    while (!sensors_->readTempHumidity(&temp, &humidity))
+        delay(200);
     // dummy
-    temp = 25.34;
-    humidity = 50.564;
-    moisture = 455;
+    // temp = 25.34;
+    // humidity = 50.564;
+    // moisture = 455;
 
     data["moisture"] = String(static_cast<int>(moisture)).c_str();
     data["temperature"] = String(static_cast<int>(temp)).c_str();
@@ -80,6 +73,11 @@ bool Controller::shouldIrrigate()
     std::map<std::string, std::string> data;
     getSensorValues(data);
 
+    // if sensor is in water or in air, return false
+    int m = stoi(data["moisture"]);
+    if (m < 300 || m > 910)
+        return false;
+
     res = isConnected() ? client_->predictIrrigation(data) : -4;
     indicateResponse(res);
 
@@ -102,12 +100,13 @@ void Controller::controllIrrigation()
     auto res = shouldIrrigate();
 
     if (res == 0) {
-        stopPump(motorSpeed, dir1, dir2);
+        Serial.println("No need to irrigate. Stopping...");
+        digitalWrite(motor, LOW);
         irrigating = false;
         return;
     }
-
-    startPump(motorSpeed, dir1, dir2);
+    Serial.println("Irrigating...");
+    digitalWrite(motor, HIGH);
     irrigating = true;
 }
 
