@@ -15,7 +15,7 @@ import prismaClient from "../../utils/prismaClient";
 
 const dateDiff = (date1: Date | null, date2: Date | null) => {
     if (!date1 || !date2) return 0;
-    return date2.getTime() - date1.getTime();
+    return date1.getTime() - date2.getTime();
 }
 
 const getWeek = (day: number) => {
@@ -78,10 +78,16 @@ const getTotalWaterUsageBySession = async (systemId: string, cropSessionId: stri
         include: {
             cropSessions: {
                 where: {
-                    cropSessionId
+                    cropSessionId,
+                    sessionActive: true,
                 },
                 include: {
-                    schedules: true
+                    schedules: {
+                        orderBy: {
+                            createdAt: "desc"
+                        },
+                        take: 5
+                    }
                 }
             }
         }
@@ -96,14 +102,14 @@ const getTotalWaterUsageBySession = async (systemId: string, cropSessionId: stri
         total += dateDiff(irrigationStopTime, irrigationStartTime), 0);
 
     irrigationDuration = Math.round(irrigationDuration / 1000 / 60); // minutes
-
     const totalWaterConsumed = sessions.pumpFlowRate * irrigationDuration;
 
     res.data = {
         operationDays,
         operationWeeks,
         irrigationDuration: irrigationDuration / 60, // hours
-        totalWaterConsumed
+        totalWaterConsumed,
+        schedules: sessions.cropSessions[0].schedules
     }
 
     return res;
