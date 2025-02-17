@@ -103,8 +103,16 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
         return res;
     }
 
+    // check if manually override
+    const manualOverride = await prismaClient.systemPreferences.findUnique({
+        where: {
+            systemId,
+            isManualOverride: true,
+        }
+    });
+
     // call the AI model for irrigation prediction
-    const enableIrrigation = await callPredictionModel(session.cropName, session.ageCount, data as LiveStatusType);
+    const enableIrrigation = manualOverride ? manualOverride.isIrrigationActive : await callPredictionModel(session.cropName, session.ageCount, data as LiveStatusType);
 
     // save the parameters & prediction in database
     delete data.irrigationStatus;
