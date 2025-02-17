@@ -91,12 +91,14 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
     const isIrrigating = data.irrigationStatus === "ON";
 
     // when the client is not irrigating, but the server has active schedule
-    if (!isIrrigating && scheduleId) 
+    if (!isIrrigating && scheduleId) {
         await deleteFalsySchedule(systemId, scheduleId);
+        scheduleId = null;
+    }
 
     // when the client is still irrigating, while the server already sent command to stop it
-    if (isIrrigating && !scheduleId && data.currentSchedule) {
-        await stopIrrigation(systemId, data.currentSchedule);
+    if (isIrrigating && !scheduleId) {
+        console.log("Client force stopped irrigating");
         res.data = {irrigate: 0};
         return res;
     }
@@ -115,30 +117,24 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
             ...data,
             irrigated: enableIrrigation
         }
-    })
+    });
 
-    // if already irrigating, and prediction is to irrigate, do nothing
-    if (isIrrigating && enableIrrigation) {
-        res.data = {irrigate: 1};
-        return res;
-    }
-
-    // if not irrigating, and prediction is not to irrigate, do nothing
-    if (!isIrrigating && !enableIrrigation) {
-        res.data = {irrigate: 0};
-        return res;
-    }
+    res.data = {irrigate: enableIrrigation ? 1 : 0};
 
     // if not irrigating, and prediction is to irrigate
-    if (!isIrrigating && enableIrrigation) {
+    if (!scheduleId && enableIrrigation) {
+        console.log("Irrigation started....");
         const scheduleId = await startIrrigation(systemId, session.cropSessionId, session.ageCount);
         res.data = {irrigate: 1, scheduleId};
         return res;
     }
 
     // if irrigating, and prediction is not to irrigate
-    await stopIrrigation(systemId, data.currentSchedule!);
-    res.data = {irrigate: 0};
+    if (scheduleId && !enableIrrigation ){
+        console.log("Irrigation stopped....");
+        await stopIrrigation(systemId, scheduleId!);
+    }
+
     return res;
 }
 
@@ -164,7 +160,7 @@ const startIrrigation = async (systemId: string, sessionId: string, cropAge: num
 };
 
 const stopIrrigation = async (systemId: string, scheduleId: string) => {
-    await prismaClient.schedules.update({
+    await prismaClient.schedules.updateMany({
         where: {
             scheduleId
         },
@@ -173,7 +169,7 @@ const stopIrrigation = async (systemId: string, scheduleId: string) => {
         }
     });
 
-    await prismaClient.systemSessions.update({
+    await prismaClient.systemSessions.updateMany({
         where: {
             systemId
         },
@@ -199,6 +195,7 @@ const callPredictionModel = async (cropName: string, cropDays: number, parameter
 };
 
 const deleteFalsySchedule = async (systemId: string, scheduleId: string) => {
+    console.log("Deleting falsy schedule");
     await prismaClient.schedules.delete({
         where: {
             scheduleId

@@ -6,7 +6,6 @@ const LiveStatus = z.object({
     temperature: z.coerce.number(),
     humidity: z.coerce.number(),
     moisture: z.coerce.number(),
-    currentSchedule: z.string().optional()
 });
 
 export type LiveStatusType = z.infer<typeof LiveStatus>;
