@@ -53,7 +53,7 @@ const getTotalWaterUsageBySystem = async (systemId: string) => {
         return total + durationPerSession;
     }, 0);
 
-    irrigationDuration = Math.round(irrigationDuration / 1000 / 60); // minutes
+    irrigationDuration = irrigationDuration / 1000 / 60; // minutes
 
     const totalWaterConsumed = sessionSchedules.pumpFlowRate * irrigationDuration;
 
@@ -101,7 +101,7 @@ const getTotalWaterUsageBySession = async (systemId: string, cropSessionId: stri
     let irrigationDuration = sessions.cropSessions[0].schedules.reduce((total, {irrigationStopTime, irrigationStartTime}) => 
         total += dateDiff(irrigationStopTime, irrigationStartTime), 0);
 
-    irrigationDuration = Math.round(irrigationDuration / 1000 / 60); // minutes
+    irrigationDuration = irrigationDuration / 1000 / 60; // minutes
     const totalWaterConsumed = sessions.pumpFlowRate * irrigationDuration;
 
     res.data = {
