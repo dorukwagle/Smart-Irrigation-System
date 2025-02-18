@@ -48,7 +48,7 @@ const LiveStatusPage = () => {
               [
                 { title: "Temperature", value: `${liveStatus?.liveStatus.temperature || ""} \u00B0C` },
                 { title: "Humidity", value: `${liveStatus?.liveStatus.humidity || ""} %` },
-                { title: "Moisture", value: `${liveStatus?.liveStatus.moisture || ""} %` },
+                { title: "Moisture", value: `${liveStatus?.liveStatus.moisture || ""} ` },
                 { title: "Irrigation Status", value: liveStatus?.liveStatus.irrigationStatus },
                 { title: "Last Updated", value: liveStatus?.liveStatus.updatedAt
                   ? new Intl.DateTimeFormat(undefined, {
