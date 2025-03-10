@@ -26,22 +26,6 @@ const SystemStatisticsPage = () => {
   return (
     <Card sx={{ width: "50%", margin: "0 auto", mt: 0, p: 2 }}>
       <CardContent>
-        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-          <TextField
-            label="Search Sessions"
-            variant="standard"
-            fullWidth
-            inputRef={searchRef}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSearch}
-          >
-            Search
-          </Button>
-        </Stack>
-        <Divider sx={{ mb: 2 }} />
         <Box sx={{ height: "250px", overflow: "auto", mb: 2 }}>
           <table style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
             <thead>

@@ -78,16 +78,18 @@ const SystemPage = () => {
             <Stack spacing={2} flex={1}>
               <TextField
                 label="System Name"
-                value={systemInfo.systemName}
+                defaultValue={systemInfo.systemName}
                 variant="standard"
                 disabled={!isEditing}
+                inputRef={systemNameRef}
                 fullWidth
               />
               <TextField
                 label="Pump Flow Rate"
                 variant="standard"
-                value={systemInfo.pumpFlowRate}
+                defaultValue={systemInfo.pumpFlowRate}
                 disabled={!isEditing}
+                inputRef={pumpFlowRateRef}
                 fullWidth
                 type="number"
               />
