@@ -74,7 +74,7 @@ const RegistrationPage = () => {
                             {isError && (
                                 <Typography variant="body1" color="red">
                                     {error.response &&
-                                        error.response.data.error}
+                                        JSON.stringify(error.response.data.error)}
                                 </Typography>
                             )}
                         </div>
