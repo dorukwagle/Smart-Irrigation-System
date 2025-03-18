@@ -16,6 +16,7 @@ describe('AuthController', () => {
   beforeAll(async () => {
     // Connect to the test database
     await prismaClient.$connect();
+    await clearDb();
   });
 
   afterAll(async () => {
