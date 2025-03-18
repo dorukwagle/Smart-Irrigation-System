@@ -4,6 +4,7 @@ const clearDb = async () => {
     await prismaClient.systemSessions.deleteMany();
     await prismaClient.liveStatus.deleteMany();
     await prismaClient.systemPreferences.deleteMany();
+    await prismaClient.cropSessions.deleteMany();
     await prismaClient.systems.deleteMany();
     await prismaClient.sessions.deleteMany();
     await prismaClient.users.deleteMany();
