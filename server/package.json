@@ -4,7 +4,7 @@
   "description": "Smart Irrigation System using AI and IoT",
   "main": "index.js",
   "scripts": {
-    "test": "vitest --no-file-parallelism",
+    "test": "vitest",
     "dev": "ts-node src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc"
@@ -20,13 +20,15 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.9",
+    "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
     "get-file-object-from-local-path": "^1.0.2",
     "install": "^0.13.0",
     "npm": "^10.8.2",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
-    "vitest": "^2.0.5"
+    "vitest": "^2.1.9"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",
