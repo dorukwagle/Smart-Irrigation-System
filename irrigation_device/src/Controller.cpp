@@ -75,7 +75,7 @@ bool Controller::shouldIrrigate()
 
     // if sensor is in water or in air, return false
     int m = stoi(data["moisture"]);
-    if (m < 300 || m > 910)
+    if (m < 300 || m > 1023)
         return false;
 
     res = isConnected() ? client_->predictIrrigation(data) : -4;
@@ -122,6 +122,5 @@ void Controller::run()
     // Implementation of the run method
     delay(irrigating ? irrigate_api_call_delay : api_call_delay);
 
-    delay(api_call_delay);
     controllIrrigation();
 }
