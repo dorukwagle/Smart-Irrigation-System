@@ -80,12 +80,14 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
             sessionActive: true
         }
     });
-
+    
     if (!session) {
         res.statusCode = 404;
         res.error = {error: "no active session"}
+        console.log("No active sessions...");
         return res;
     }
+    console.log("reached here");
 
     // check if currently irrigating
     const isIrrigating = data.irrigationStatus === "ON";
@@ -112,6 +114,7 @@ const predictIrrigation = async (systemId: string, scheduleId: string | null | u
     });
 
     // call the AI model for irrigation prediction
+    console.log("Calling AI model....");
     const enableIrrigation = manualOverride ? manualOverride.isIrrigationActive : await callPredictionModel(session.cropName, session.ageCount, data as LiveStatusType);
 
     // save the parameters & prediction in database

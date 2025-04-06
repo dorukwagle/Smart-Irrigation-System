@@ -1,0 +1,39 @@
+config:
+  target: "http://localhost:3000"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 30
+      arrivalRate: 20
+    - duration: 30
+      arrivalRate: 40
+scenarios:
+  - flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            username: "testuser"
+            password: "testuser"
+          capture:
+            headers:
+              Set-Cookie: "sessionId"
+            as: "sessionId"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/systems"
+          headers:
+            Cookie: "sessionId={{sessionId}}"
+          expect:
+            - statusCode: 200
+  - flow:
+      - post:
+          url: "/intercom/system/live?identifier=01960439-1b8d-788a-b637-0b9c8ed920f6"
+          json:
+            irrigationStatus: "OFF"
+            temperature: 21
+            humidity: 50
+            moisture: 410
+          expect:
+            - statusCode: 200
+
