@@ -40,3 +40,12 @@ void ledTest(LedIndicator* indicator) {
     Serial.println("Humidity: " + String(humidity));
     delay(500);
   }
+
+  void motorTest(byte motorPin) {
+    Serial.println("Motor on");
+    digitalWrite(motorPin, HIGH);
+    delay(5000);
+    Serial.println("Motor off");
+    digitalWrite(motorPin, LOW);
+    delay(5000);
+  }
